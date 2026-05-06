@@ -1,403 +1,211 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  LayoutDashboard, 
-  Users, 
-  PhoneCall, 
-  MapPin, 
-  Bell, 
-  Globe, 
-  FileText, 
-  Plus, 
-  Search, 
-  TrendingUp,
-  AlertCircle,
-  CheckCircle2,
-  Clock,
-  ChevronRight,
-  MoreVertical,
-  Filter,
-  X
-} from 'lucide-react';
-
-const SEGMENTS = ["Multifamily", "HOA", "Commercial", "Industrial", "Retail", "Senior Living"];
-const STATUSES = [
-  "New Lead", "Researching", "Contacted", "Left Voicemail", "Email Sent", 
-  "Follow Up Needed", "Meeting Scheduled", "Property Walk Scheduled", 
-  "Proposal Sent", "Won", "Lost", "Dormant"
-];
-
-// REAL DFW OFFICE DATA - Verified Phone Numbers & Locations
-const INITIAL_LEADS = [
-  // --- MULTIFAMILY (25 REAL DFW TARGETS) ---
-  { id: 1, priority: 'High', company: 'Greystar (Dallas Regional)', segment: 'Multifamily', contact: '', title: 'Regional Director', phone: '214-521-1200', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Uptown/Victory Park focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 2, priority: 'High', company: 'Lincoln Property Company (HQ)', segment: 'Multifamily', contact: '', title: 'VP Multifamily', phone: '214-740-3300', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Main headquarters located in Turtle Creek.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 3, priority: 'High', company: 'MAA (Irving Regional)', segment: 'Multifamily', contact: '', title: 'Regional Maintenance Manager', phone: '972-401-4400', email: '', city: 'Irving', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Las Colinas assets.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 4, priority: 'High', company: 'Cortland (DFW Regional)', segment: 'Multifamily', contact: '', title: 'Director of Ops', phone: '469-522-3000', email: '', city: 'Carrollton', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Large Plano/Carrollton portfolio.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 5, priority: 'Medium', company: 'Knightvest Management', segment: 'Multifamily', contact: '', title: 'VP of Construction', phone: '972-528-5600', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Renovation specialists.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 6, priority: 'High', company: 'BH Management Services', segment: 'Multifamily', contact: '', title: 'Regional VP', phone: '972-233-1100', email: '', city: 'Richardson', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Heavy Richardson presence.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 7, priority: 'Medium', company: 'RPM Living (Dallas)', segment: 'Multifamily', contact: '', title: 'Regional Director', phone: '214-774-4500', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Active growth in DFW market.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 8, priority: 'High', company: 'Avenue5 Residential', segment: 'Multifamily', contact: '', title: 'Regional Manager', phone: '817-204-0400', email: '', city: 'Fort Worth', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Strong Tarrant County assets.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 9, priority: 'Medium', company: 'ZRS Management', segment: 'Multifamily', contact: '', title: 'Portfolio Manager', phone: '214-522-8100', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'High-end mid-rise assets.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 10, priority: 'High', company: 'Bell Partners (Addison)', segment: 'Multifamily', contact: '', title: 'Regional Lead', phone: '972-663-8000', email: '', city: 'Addison', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Addison/North Dallas focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 11, priority: 'Medium', company: 'Camden Property Trust', segment: 'Multifamily', contact: '', title: 'Regional VP', phone: '214-361-9000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Institutional grade.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 12, priority: 'High', company: 'Weidner Apartment Homes', segment: 'Multifamily', contact: '', title: 'Area Manager', phone: '817-410-2000', email: '', city: 'Fort Worth', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Alliance area focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 13, priority: 'Low', company: 'Gables Residential', segment: 'Multifamily', contact: '', title: 'Property Director', phone: '214-720-9900', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Uptown focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: false },
-  { id: 14, priority: 'High', company: 'Willow Bridge (Formerly Lincoln Res)', segment: 'Multifamily', contact: '', title: 'Senior VP', phone: '214-922-1000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Formerly Lincoln Residential.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 15, priority: 'Medium', company: 'CWS Apartment Homes', segment: 'Multifamily', contact: '', title: 'Portfolio Director', phone: '972-506-0000', email: '', city: 'Plano', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Legacy West/Plano focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 16, priority: 'Medium', company: 'Milestone Management', segment: 'Multifamily', contact: '', title: 'Regional Lead', phone: '214-561-1200', email: '', city: 'Plano', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Starwood Capital subsidiary.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 17, priority: 'High', company: 'Fairfield Residential', segment: 'Multifamily', contact: '', title: 'Regional Manager', phone: '817-882-9000', email: '', city: 'Grand Prairie', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Older Tarrant county assets.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 18, priority: 'High', company: 'UDR, Inc. (Dallas)', segment: 'Multifamily', contact: '', title: 'Asset Manager', phone: '214-252-8000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Victory Park assets.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 19, priority: 'Low', company: 'Tonti Properties', segment: 'Multifamily', contact: '', title: 'Regional VP', phone: '972-661-0000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Local owner/operator.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 20, priority: 'High', company: 'ConAm Management', segment: 'Multifamily', contact: '', title: 'Regional Manager', phone: '214-365-0000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'East Dallas portfolio.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 21, priority: 'Medium', company: 'Dominium (Dallas)', segment: 'Multifamily', contact: '', title: 'Area Lead', phone: '214-231-1000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Affordable housing focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 22, priority: 'High', company: 'Bridge Property Management', segment: 'Multifamily', contact: '', title: 'Area Manager', phone: '972-991-0000', email: '', city: 'Plano', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Plano/Frisco focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 23, priority: 'Low', company: 'Sunroad Management', segment: 'Multifamily', contact: '', title: 'Property Lead', phone: '469-800-0000', email: '', city: 'Frisco', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Frisco submarket.', portfolioType: 'Multifamily Portfolio', multipleProperties: false },
-  { id: 24, priority: 'Medium', company: 'WASH Multifamily', segment: 'Multifamily', contact: '', title: 'Regional Ops', phone: '214-555-0000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Laundry access routes focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-  { id: 25, priority: 'High', company: 'Goldoller Real Estate', segment: 'Multifamily', contact: '', title: 'Regional Manager', phone: '214-300-0000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Active in North Dallas.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
-
-  // --- COMMERCIAL (10 REAL DFW TARGETS) ---
-  { id: 26, priority: 'High', company: 'CBRE Dallas Portfolio', segment: 'Commercial', contact: '', title: 'Portfolio Manager', phone: '214-979-6100', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Largest commercial manager in DFW.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
-  { id: 27, priority: 'High', company: 'JLL (Jones Lang LaSalle)', segment: 'Commercial', contact: '', title: 'Director of Facilities', phone: '214-438-6100', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Industrial/Logistics focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
-  { id: 28, priority: 'Medium', company: 'Cushman & Wakefield DFW', segment: 'Commercial', contact: '', title: 'Senior Director', phone: '972-663-9600', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Plano/Dallas focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
-  { id: 29, priority: 'High', company: 'Stream Realty Partners', segment: 'Commercial', contact: '', title: 'Property Manager', phone: '214-267-0400', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Premium management standards.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
-  { id: 30, priority: 'Medium', company: 'Transwestern DFW', segment: 'Commercial', contact: '', title: 'VP Property Mgmt', phone: '817-877-4433', email: '', city: 'Fort Worth', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Fort Worth CBD focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
-  { id: 31, priority: 'High', company: 'Colliers International', segment: 'Commercial', contact: '', title: 'Senior Real Estate Mgr', phone: '214-692-1100', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Office park focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
-  { id: 32, priority: 'Low', company: 'Younger Partners', segment: 'Commercial', contact: '', title: 'Director of Prop Mgmt', phone: '214-294-4400', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Retail strip focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
-  { id: 33, priority: 'High', company: 'Holt Lunsford Commercial', segment: 'Commercial', contact: '', title: 'Director of Ops', phone: '972-241-8300', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Industrial Airport submarket.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
-  { id: 34, priority: 'Medium', company: 'Newmark (Dallas)', segment: 'Commercial', contact: '', title: 'Senior Manager', phone: '469-467-2000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Class A Office focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
-  { id: 35, priority: 'High', company: 'Gaedeke Group', segment: 'Commercial', contact: '', title: 'Senior Property Mgr', phone: '214-273-3333', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Office portfolio.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
-
-  // --- HOA (10 REAL DFW TARGETS) ---
-  { id: 36, priority: 'High', company: 'FirstService Residential (Dallas)', segment: 'HOA', contact: '', title: 'Director of Management', phone: '214-871-9700', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'DFW market leader.', portfolioType: 'HOA Portfolio', multipleProperties: true },
-  { id: 37, priority: 'High', company: 'Associa (Principal Mgmt)', segment: 'HOA', contact: '', title: 'Senior Community Mgr', phone: '214-368-4030', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Uptown office location.', portfolioType: 'HOA Portfolio', multipleProperties: true },
-  { id: 38, priority: 'Medium', company: 'SBB Management Company', segment: 'HOA', contact: '', title: 'Director of Mgmt', phone: '972-960-2800', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Collin County stronghold.', portfolioType: 'HOA Portfolio', multipleProperties: true },
-  { id: 39, priority: 'Medium', company: 'CMA Management (DFW)', segment: 'HOA', contact: '', title: 'Area Manager', phone: '972-943-2800', email: '', city: 'Plano', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Plano/McKinney dominance.', portfolioType: 'HOA Portfolio', multipleProperties: true },
-  { id: 40, priority: 'Low', company: 'Veracity Management', segment: 'HOA', contact: '', title: 'President', phone: '972-618-1991', email: '', city: 'Irving', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Local boutique manager.', portfolioType: 'HOA Portfolio', multipleProperties: false },
-  { id: 41, priority: 'High', company: 'RealManage DFW', segment: 'HOA', contact: '', title: 'Director of Ops', phone: '866-473-2573', email: '', city: 'Grand Prairie', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Technology driven manager.', portfolioType: 'HOA Portfolio', multipleProperties: true },
-  { id: 42, priority: 'Medium', company: 'Goodwin & Company (Dallas)', segment: 'HOA', contact: '', title: 'Director of Growth', phone: '214-445-2200', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Expanding suburban footprint.', portfolioType: 'HOA Portfolio', multipleProperties: true },
-  { id: 43, priority: 'Low', company: 'Neighborhood Management', segment: 'HOA', contact: '', title: 'Senior Manager', phone: '972-359-1548', email: '', city: 'Allen', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Allen/McKinney specialist.', portfolioType: 'HOA Portfolio', multipleProperties: true },
-  { id: 44, priority: 'High', company: 'GloboLink Management', segment: 'HOA', contact: '', title: 'Senior Manager', phone: '817-488-8282', email: '', city: 'Colleyville', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Southlake/Colleyville focus.', portfolioType: 'HOA Portfolio', multipleProperties: true },
-  { id: 45, priority: 'Low', company: 'Spectrum Association Mgmt', segment: 'HOA', contact: '', title: 'VP of Operations', phone: '972-992-3444', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Frisco focused.', portfolioType: 'HOA Portfolio', multipleProperties: true },
-];
-
-export default function App() {
-  const [activeTab, setActiveTab] = useState('MASTER LEADS DASHBOARD');
-  const [leads, setLeads] = useState(INITIAL_LEADS);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const calculateScore = (lead) => {
-    let score = 0;
-    if (lead.portfolioType === 'Multifamily Portfolio') score += 10;
-    if (lead.portfolioType === 'Commercial Portfolio') score += 8;
-    if (lead.portfolioType === 'HOA Portfolio') score += 7;
-    if (lead.multipleProperties) score += 10;
-    if (lead.status === 'Won') score = 100;
-    return score;
-  };
-
-  const updateLead = (id, field, value) => {
-    setLeads(prevLeads => prevLeads.map(l => l.id === id ? { ...l, [field]: value } : l));
-  };
-
-  const getRowColor = (dateStr, status) => {
-    if (status === 'Won') return 'bg-green-50 border-l-4 border-green-500';
-    if (status === 'Dormant' || status === 'Lost') return 'bg-gray-50 border-l-4 border-gray-300 opacity-75';
-    if (!dateStr) return 'bg-white border-l-4 border-transparent';
-    
-    const today = new Date();
-    const targetDate = new Date(dateStr);
-    const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays < 0) return 'bg-red-50 border-l-4 border-red-500';
-    if (diffDays <= 2) return 'bg-yellow-50 border-l-4 border-yellow-500';
-    return 'bg-white border-l-4 border-transparent';
-  };
-
-  const metrics = useMemo(() => {
-    const totalLeads = leads.length;
-    const meetings = leads.filter(l => l.status === 'Meeting Scheduled').length;
-    const research = leads.filter(l => l.status === 'Researching').length;
-    const wonCount = leads.filter(l => l.status === 'Won').length;
-
-    return [
-      { label: 'Target Leads', value: totalLeads, icon: <Users size={20} className="text-blue-600" /> },
-      { label: 'Need Research', value: research, icon: <Search size={20} className="text-purple-600" /> },
-      { label: 'Meetings', value: meetings, icon: <Clock size={20} className="text-orange-600" /> },
-      { label: 'Closed Won', value: wonCount, icon: <TrendingUp size={20} className="text-green-600" /> },
-      { label: 'Active Pipeline', value: totalLeads - research, icon: <FileText size={20} className="text-indigo-600" /> },
-    ];
-  }, [leads]);
-
-  const filteredLeads = leads.filter(l => 
-    l.company.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    l.city.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleAddProspect = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const newLead = {
-      id: Date.now(),
-      priority: formData.get('priority'),
-      company: formData.get('company'),
-      segment: formData.get('segment'),
-      contact: '',
-      title: formData.get('title'),
-      phone: formData.get('phone'),
-      email: '',
-      city: formData.get('city'),
-      status: 'Researching',
-      lastContact: null,
-      nextFollowUp: null,
-      notes: formData.get('notes'),
-      multipleProperties: true
-    };
-    setLeads([newLead, ...leads]);
-    setIsModalOpen(false);
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-3">
-          <div className="bg-blue-600 p-2 rounded-lg">
-            <TrendingUp className="text-white" size={24} />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KKE Property Management CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .modal-bg { background: rgba(15, 23, 42, 0.65); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <div class="min-h-screen flex flex-col">
+    <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 sticky top-0 z-30">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="bg-blue-700 p-2 rounded-xl shadow-sm">
+            <span class="text-white font-black text-lg">KKE</span>
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">KKE Sales Command Center</h1>
-            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">DFW Master Prospect List</p>
+            <h1 class="text-xl md:text-2xl font-black tracking-tight">KKE Sales Command Center</h1>
+            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">North Texas Property Management Pipeline</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Filter by company or city..." 
-              className="pl-10 pr-4 py-2 border border-slate-200 rounded-full bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-64 text-sm transition-all"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold shadow-sm transition-colors"
-          >
-            <Plus size={18} /> Add Prospect
-          </button>
-        </div>
-      </header>
 
-      {/* Stats Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 px-6 py-6">
-        {metrics.map((m, i) => (
-          <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 transition-transform hover:scale-[1.02]">
-            <div className="bg-slate-50 p-3 rounded-lg">
-              {m.icon}
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase">{m.label}</p>
-              <p className="text-lg font-bold">{m.value}</p>
-            </div>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative">
+            <input id="searchInput" type="text" placeholder="Search company, city, segment..." class="w-full sm:w-72 pl-4 pr-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm" />
           </div>
-        ))}
+          <button onclick="openModal()" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm">+ Add Prospect</button>
+        </div>
       </div>
+    </header>
 
-      {/* Tabs Navigation */}
-      <nav className="px-6 flex gap-1 border-b border-slate-200 bg-white overflow-x-auto no-scrollbar">
-        {[
-          { id: 'MASTER LEADS DASHBOARD', icon: <LayoutDashboard size={18} /> },
-          { id: 'CALL TRACKER', icon: <PhoneCall size={18} /> },
-          { id: 'FOLLOW-UP AUTOMATION', icon: <Bell size={18} /> },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-3 flex items-center gap-2 text-sm font-semibold whitespace-nowrap transition-all border-b-2 ${
-              activeTab === tab.id 
-              ? 'border-blue-600 text-blue-600 bg-blue-50/50' 
-              : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-            }`}
-          >
-            {tab.icon} {tab.id}
-          </button>
-        ))}
-      </nav>
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-4 md:p-6">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <p class="text-xs font-bold text-slate-500 uppercase">Target Leads</p>
+        <p id="metricTotal" class="text-2xl font-black text-slate-900">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <p class="text-xs font-bold text-slate-500 uppercase">Need Research</p>
+        <p id="metricResearch" class="text-2xl font-black text-purple-700">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <p class="text-xs font-bold text-slate-500 uppercase">Meetings</p>
+        <p id="metricMeetings" class="text-2xl font-black text-orange-600">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <p class="text-xs font-bold text-slate-500 uppercase">Property Walks</p>
+        <p id="metricWalks" class="text-2xl font-black text-blue-700">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <p class="text-xs font-bold text-slate-500 uppercase">Closed Won</p>
+        <p id="metricWon" class="text-2xl font-black text-green-700">0</p>
+      </div>
+    </section>
 
-      {/* Content Area */}
-      <main className="flex-1 p-6 overflow-auto">
-        {activeTab === 'MASTER LEADS DASHBOARD' && (
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50 border-b border-slate-200">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Company</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Segment</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Decision Maker</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Regional Phone</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">City</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Status</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Score</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredLeads.map(lead => (
-                    <tr key={lead.id} className={`${getRowColor(lead.nextFollowUp, lead.status)} transition-colors`}>
-                      <td className="px-4 py-4">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-slate-800">{lead.company}</span>
-                          <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">{lead.notes}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 font-semibold text-slate-600">{lead.segment}</td>
-                      <td className="px-4 py-4">
-                        <div className="flex flex-col">
-                          <input 
-                            className="bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-500 focus:outline-none font-semibold text-slate-800 w-full"
-                            placeholder="[Enter Real Name]"
-                            value={lead.contact}
-                            onChange={(e) => updateLead(lead.id, 'contact', e.target.value)}
-                          />
-                          <span className="text-xs text-slate-400 italic">{lead.title}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 font-mono text-xs font-bold text-slate-700">{lead.phone}</td>
-                      <td className="px-4 py-4 font-medium text-slate-600">{lead.city}</td>
-                      <td className="px-4 py-4">
-                        <select 
-                          className="bg-white border border-slate-200 rounded px-2 py-1 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
-                          value={lead.status}
-                          onChange={(e) => updateLead(lead.id, 'status', e.target.value)}
-                        >
-                          {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
-                      </td>
-                      <td className="px-4 py-4 text-center">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-blue-700">{calculateScore(lead)}</span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+    <nav class="px-4 md:px-6 flex gap-1 border-b border-slate-200 bg-white overflow-x-auto no-scrollbar">
+      <button data-tab="leads" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-blue-700 text-blue-700 bg-blue-50">Master Leads Dashboard</button>
+      <button data-tab="calls" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Call Tracker</button>
+      <button data-tab="walks" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Property Walk Tracker</button>
+      <button data-tab="followups" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Follow-Up Automation</button>
+      <button data-tab="associations" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Associations</button>
+      <button data-tab="proposals" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Proposal Tracker</button>
+    </nav>
+
+    <main class="flex-1 p-4 md:p-6">
+      <section id="tab-leads" class="tab-panel">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h2 class="font-black text-lg">Master Leads Dashboard</h2>
+              <p class="text-sm text-slate-500">Use this as your main command center for North Texas outreach.</p>
             </div>
+            <button onclick="exportCSV()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold">Export CSV</button>
           </div>
-        )}
-
-        {/* Call Tracker Tab */}
-        {activeTab === 'CALL TRACKER' && (
-          <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm text-center">
-            <PhoneCall className="mx-auto text-slate-300 mb-4" size={48} />
-            <h2 className="text-xl font-bold mb-2">DFW Call Outreach Queue</h2>
-            <p className="text-slate-500 mb-6 max-w-md mx-auto">This interface acts as your guide. Use the regional office phone numbers to reach a gatekeeper and identify the decision-maker for each portfolio.</p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-              <div className="p-4 border border-slate-100 rounded-lg bg-slate-50">
-                <p className="font-bold text-blue-600">1. Dial Number</p>
-                <p className="text-xs text-slate-500 italic">Call the office phone listed in your dashboard.</p>
-              </div>
-              <div className="p-4 border border-slate-100 rounded-lg bg-slate-50">
-                <p className="font-bold text-blue-600">2. Qualify</p>
-                <p className="text-xs text-slate-500 italic">Ask for the Maintenance or Portfolio Director.</p>
-              </div>
-              <div className="p-4 border border-slate-100 rounded-lg bg-slate-50">
-                <p className="font-bold text-blue-600">3. Update CRM</p>
-                <p className="text-xs text-slate-500 italic">Type the verified name directly into the lead row.</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Automation Tab */}
-        {activeTab === 'FOLLOW-UP AUTOMATION' && (
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
-              <Bell className="text-blue-600" /> Automated Scoring Guide
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                {[
-                  { label: "Multifamily Portfolio (Greystar/Lincoln/MAA)", pts: "+10" },
-                  { label: "Commercial Leader (CBRE/JLL/Stream)", pts: "+8" },
-                  { label: "Institutional HOA (FirstService/Associa)", pts: "+7" },
-                  { label: "Multiple DFW Properties", pts: "+10" },
-                ].map((rule, i) => (
-                  <div key={i} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <span className="font-semibold text-slate-700">{rule.label}</span>
-                    <span className="font-bold text-blue-600">{rule.pts}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-3">
-                <AlertCircle className="text-blue-600 flex-shrink-0" size={20} />
-                <p className="text-sm text-blue-800 leading-relaxed italic">
-                  "Researching is the vital first stage. Your score will increase automatically as you verify contact details and move prospects into the 'Contacted' or 'Meeting Scheduled' status."
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Add Lead Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">Add New Prospect</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
-                <X size={20} />
-              </button>
-            </div>
-            <form onSubmit={handleAddProspect} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase text-slate-400">Priority</label>
-                  <select name="priority" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50">
-                    <option>High</option>
-                    <option>Medium</option>
-                    <option>Low</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase text-slate-400">Segment</label>
-                  <select name="segment" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50">
-                    {SEGMENTS.map(s => <option key={s}>{s}</option>)}
-                  </select>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase text-slate-400">Company Name</label>
-                <input required name="company" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500" placeholder="e.g. Hines Global" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase text-slate-400">Office Phone</label>
-                  <input name="phone" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 focus:bg-white" placeholder="214-555-0000" />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase text-slate-400">City</label>
-                  <input name="city" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 focus:bg-white" placeholder="Dallas" />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase text-slate-400">Quick Notes</label>
-                <textarea name="notes" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 focus:bg-white" rows="2" placeholder="e.g. Major Uptown asset."></textarea>
-              </div>
-              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors mt-4">
-                Add to Research Queue
-              </button>
-            </form>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-100 border-b border-slate-200">
+                <tr>
+                  <th class="px-4 py-3 font-black text-slate-600">Priority</th>
+                  <th class="px-4 py-3 font-black text-slate-600 min-w-64">Company</th>
+                  <th class="px-4 py-3 font-black text-slate-600">Segment</th>
+                  <th class="px-4 py-3 font-black text-slate-600 min-w-56">Contact</th>
+                  <th class="px-4 py-3 font-black text-slate-600 min-w-56">Title</th>
+                  <th class="px-4 py-3 font-black text-slate-600">Phone</th>
+                  <th class="px-4 py-3 font-black text-slate-600 min-w-56">Email</th>
+                  <th class="px-4 py-3 font-black text-slate-600">City</th>
+                  <th class="px-4 py-3 font-black text-slate-600 min-w-52">Status</th>
+                  <th class="px-4 py-3 font-black text-slate-600">Score</th>
+                  <th class="px-4 py-3 font-black text-slate-600 min-w-40">Last Contact</th>
+                  <th class="px-4 py-3 font-black text-slate-600 min-w-40">Next Follow Up</th>
+                  <th class="px-4 py-3 font-black text-slate-600 min-w-80">Notes</th>
+                </tr>
+              </thead>
+              <tbody id="leadsTable" class="divide-y divide-slate-100"></tbody>
+            </table>
           </div>
         </div>
-      )}
+      </section>
 
-      <footer className="px-6 py-4 border-t border-slate-200 bg-white text-center">
-        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest italic">Note: All data entered in this interface is stored locally in your session. Use the 'Preview' button to interact.</p>
-      </footer>
-    </div>
-  );
-}
+      <section id="tab-calls" class="tab-panel hidden">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-200">
+            <h2 class="font-black text-lg">Call Tracker</h2>
+            <p class="text-sm text-slate-500">Log every touchpoint and set your next follow-up date.</p>
+          </div>
+          <div class="p-4 grid grid-cols-1 md:grid-cols-6 gap-3 border-b border-slate-200">
+            <input id="callDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
+            <input id="callCompany" placeholder="Company" class="border rounded-xl px-3 py-2 text-sm" />
+            <input id="callContact" placeholder="Contact" class="border rounded-xl px-3 py-2 text-sm" />
+            <select id="callOutcome" class="border rounded-xl px-3 py-2 text-sm">
+              <option>No Answer</option><option>Gatekeeper</option><option>Left Voicemail</option><option>Interested</option><option>Not Interested</option><option>Needs Follow Up</option><option>Wants Proposal</option><option>Wants Site Visit</option>
+            </select>
+            <input id="callFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm" />
+            <button onclick="addCall()" class="bg-blue-700 text-white rounded-xl font-bold text-sm">Add Call</button>
+            <textarea id="callNotes" placeholder="Notes" class="md:col-span-6 border rounded-xl px-3 py-2 text-sm"></textarea>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-100"><tr><th class="p-3 text-left">Date</th><th class="p-3 text-left">Company</th><th class="p-3 text-left">Contact</th><th class="p-3 text-left">Outcome</th><th class="p-3 text-left">Follow Up</th><th class="p-3 text-left">Notes</th></tr></thead>
+              <tbody id="callsTable" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-walks" class="tab-panel hidden">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-200">
+            <h2 class="font-black text-lg">Property Walk Tracker</h2>
+            <p class="text-sm text-slate-500">Track site walks, issues found, risk level, and proposal needs.</p>
+          </div>
+          <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-3 border-b border-slate-200">
+            <input id="walkProperty" placeholder="Property" class="border rounded-xl px-3 py-2 text-sm" />
+            <input id="walkManager" placeholder="Manager" class="border rounded-xl px-3 py-2 text-sm" />
+            <input id="walkDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
+            <select id="walkType" class="border rounded-xl px-3 py-2 text-sm"><option>Multifamily</option><option>HOA</option><option>Commercial</option><option>Retail</option><option>Industrial</option><option>Senior Living</option></select>
+            <select id="walkIssue" class="border rounded-xl px-3 py-2 text-sm"><option>Sidewalk Settlement</option><option>ADA Trip Hazard</option><option>Pool Deck</option><option>Dumpster Pad</option><option>Parking Lot Settlement</option><option>Void Filling</option><option>Curb/Gutter</option><option>Loading Dock</option><option>Entryway Settlement</option></select>
+            <select id="walkRisk" class="border rounded-xl px-3 py-2 text-sm"><option>Low</option><option>Medium</option><option>High</option><option>Urgent</option></select>
+            <label class="flex items-center gap-2 text-sm font-bold"><input id="walkProposal" type="checkbox" /> Proposal Needed</label>
+            <button onclick="addWalk()" class="bg-blue-700 text-white rounded-xl font-bold text-sm">Add Walk</button>
+            <input id="walkFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm md:col-span-4" />
+          </div>
+          <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="p-3 text-left">Property</th><th class="p-3 text-left">Manager</th><th class="p-3 text-left">Date</th><th class="p-3 text-left">Type</th><th class="p-3 text-left">Issues</th><th class="p-3 text-left">Risk</th><th class="p-3 text-left">Proposal</th><th class="p-3 text-left">Follow Up</th></tr></thead><tbody id="walksTable" class="divide-y divide-slate-100"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="tab-followups" class="tab-panel hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+            <h2 class="font-black text-lg mb-4">Lead Scoring Criteria</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Multifamily Portfolio</span><b class="text-blue-700">+10</b></div>
+              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Commercial Portfolio</span><b class="text-blue-700">+8</b></div>
+              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>HOA Portfolio</span><b class="text-blue-700">+7</b></div>
+              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Multiple DFW Properties</span><b class="text-blue-700">+10</b></div>
+              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Meeting Scheduled</span><b class="text-blue-700">+20</b></div>
+              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Proposal Sent</span><b class="text-blue-700">+25</b></div>
+              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Property Walk Scheduled</span><b class="text-blue-700">+30</b></div>
+            </div>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+            <h2 class="font-black text-lg mb-4">Hot Leads</h2>
+            <div id="hotLeads" class="space-y-3"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-associations" class="tab-panel hidden">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+          <h2 class="font-black text-lg mb-4">Association Networking</h2>
+          <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="p-3 text-left">Organization</th><th class="p-3 text-left">Event</th><th class="p-3 text-left">Date</th><th class="p-3 text-left">Attending</th><th class="p-3 text-left">Contacts Made</th><th class="p-3 text-left">Follow Up</th></tr></thead><tbody id="assocTable"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="tab-proposals" class="tab-panel hidden">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-200">
+            <h2 class="font-black text-lg">Proposal Tracker</h2>
+          </div>
+          <div class="p-4 grid grid-cols-1 md:grid-cols-6 gap-3 border-b border-slate-200">
+            <input id="proposalCompany" placeholder="Company" class="border rounded-xl px-3 py-2 text-sm" />
+            <input id="proposalProperty" placeholder="Property" class="border rounded-xl px-3 py-2 text-sm" />
+            <input id="proposalAmount" type="number" placeholder="Amount" class="border rounded-xl px-3 py-2 text-sm" />
+            <input id="proposalDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
+            <select id="proposalStatus" class="border rounded-xl px-3 py-2 text-sm"><option>Drafting</option><option>Sent</option><option>Reviewing</option><option>Negotiating</option><option>Approved</option><option>Rejected</option></select>
+            <button onclick="addProposal()" class="bg-blue-700 text-white rounded-xl font-bold text-sm">Add Proposal</button>
+            <input id="proposalFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm md:col-span-6" />
+          </div>
+          <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="p-3 text-left">Company</th><th class="p-3 text-left">Property</th><th class="p-3 text-left">Amount</th><th class="p-3 text-left">Date Sent</th><th class="p-3 text-left">Status</th><th class="p-3 text-left">Follow Up</th></tr></thead><tbody id="proposalTable" class="divide-y divide-slate-100"></tbody></table></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="leadModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-bg">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-6">
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="text-xl font-black">Add New Prospect</h2>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-2xl">&times;</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <select id="newPriority" class="border rounded-xl px-3 py-2 text-sm"><option>High</option><option>Medium</option><option>Low</option></select>
+        <select id="newSegment" class="border rounded-xl px-3 py-2 text-sm"><option>Multifamily</option><option>HOA</option><option>Commer
