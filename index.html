@@ -86,6 +86,7 @@
                 <tr>
                   <th class="px-4 py-3 font-black text-slate-600">Priority</th>
                   <th class="px-4 py-3 font-black text-slate-600 min-w-64">Company</th>
+                  <th class="px-4 py-3 font-black text-slate-600 min-w-64">Vendor Status</th>
                   <th class="px-4 py-3 font-black text-slate-600">Segment</th>
                   <th class="px-4 py-3 font-black text-slate-600 min-w-56">Contact</th>
                   <th class="px-4 py-3 font-black text-slate-600 min-w-56">Title</th>
@@ -215,6 +216,22 @@
         <input id="newPhone" placeholder="Phone" class="border rounded-xl px-3 py-2 text-sm" />
         <input id="newEmail" placeholder="Email" class="border rounded-xl px-3 py-2 text-sm" />
         <input id="newCity" placeholder="City" class="border rounded-xl px-3 py-2 text-sm" />
+        <select id="newVendorStatus" class="border rounded-xl px-3 py-2 text-sm">
+          <option>Not Started</option>
+          <option>Need Vendor Portal</option>
+          <option>Application Requested</option>
+          <option>Application Received</option>
+          <option>Application Submitted</option>
+          <option>Waiting on Insurance Review</option>
+          <option>Waiting on W9/Compliance Docs</option>
+          <option>Waiting on COI Requirements</option>
+          <option>COI Submitted</option>
+          <option>Background Check Required</option>
+          <option>Approved Vendor</option>
+          <option>Active Vendor</option>
+          <option>Rejected / Not Accepted</option>
+          <option>Dormant Vendor</option>
+        </select>
         <input id="newFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm" />
         <textarea id="newNotes" placeholder="Notes" class="md:col-span-2 border rounded-xl px-3 py-2 text-sm" rows="3"></textarea>
       </div>
@@ -224,6 +241,23 @@
 
   <script>
     const STATUSES = ["New Lead", "Researching", "Contacted", "Left Voicemail", "Email Sent", "Follow Up Needed", "Meeting Scheduled", "Property Walk Scheduled", "Proposal Sent", "Won", "Lost", "Dormant"];
+
+    const VENDOR_STATUSES = [
+      "Not Started",
+      "Need Vendor Portal",
+      "Application Requested",
+      "Application Received",
+      "Application Submitted",
+      "Waiting on Insurance Review",
+      "Waiting on W9/Compliance Docs",
+      "Waiting on COI Requirements",
+      "COI Submitted",
+      "Background Check Required",
+      "Approved Vendor",
+      "Active Vendor",
+      "Rejected / Not Accepted",
+      "Dormant Vendor"
+    ];
 
     const defaultLeads = [
       // 25 Multifamily companies — company-level targets. Contact names/emails intentionally blank unless verified.
@@ -279,6 +313,14 @@
     ];
 
     let leads = JSON.parse(localStorage.getItem('kkeLeads')) || defaultLeads;
+
+    // Safety migration: older saved leads will not have vendorStatus yet.
+    leads = leads.map(lead => ({
+      ...lead,
+      vendorStatus: lead.vendorStatus || 'Not Started'
+    }));
+    localStorage.setItem('kkeLeads', JSON.stringify(leads));
+
     let calls = JSON.parse(localStorage.getItem('kkeCalls')) || [];
     let walks = JSON.parse(localStorage.getItem('kkeWalks')) || [];
     let proposals = JSON.parse(localStorage.getItem('kkeProposals')) || [];
@@ -326,11 +368,12 @@
     function renderLeads() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const tbody = document.getElementById('leadsTable');
-      const filtered = leads.filter(l => [l.company,l.city,l.segment,l.status,l.notes].join(' ').toLowerCase().includes(search));
+      const filtered = leads.filter(l => [l.company,l.city,l.segment,l.status,l.vendorStatus,l.notes].join(' ').toLowerCase().includes(search));
       tbody.innerHTML = filtered.map(lead => `
         <tr class="${rowClass(lead)} hover:bg-slate-50">
           <td class="px-4 py-3 font-bold">${lead.priority}</td>
           <td class="px-4 py-3"><b>${lead.company}</b><div class="text-[10px] uppercase text-slate-400 font-bold">${lead.notes || ''}</div></td>
+          <td class="px-4 py-3"><select class="border rounded-lg px-2 py-1 text-xs font-bold w-full" onchange="updateLead(${lead.id}, 'vendorStatus', this.value)">${VENDOR_STATUSES.map(s => `<option ${s===(lead.vendorStatus || 'Not Started')?'selected':''}>${s}</option>`).join('')}</select></td>
           <td class="px-4 py-3 font-semibold">${lead.segment}</td>
           <td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${lead.contact || ''}" onchange="updateLead(${lead.id}, 'contact', this.value)" placeholder="Enter name"></td>
           <td class="px-4 py-3 text-slate-600">${lead.title || ''}</td>
@@ -360,7 +403,7 @@
       const box = document.getElementById('hotLeads');
       if (!box) return;
       const hot = [...leads].sort((a,b) => calculateScore(b)-calculateScore(a)).slice(0,10);
-      box.innerHTML = hot.map(l => `<div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between"><div><b>${l.company}</b><div class="text-xs text-slate-500">${l.segment} • ${l.status}</div></div><span class="font-black text-blue-700">${calculateScore(l)}</span></div>`).join('');
+      box.innerHTML = hot.map(l => `<div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between"><div><b>${l.company}</b><div class="text-xs text-slate-500">${l.segment} • ${l.status} • ${l.vendorStatus || 'Not Started'}</div></div><span class="font-black text-blue-700">${calculateScore(l)}</span></div>`).join('');
     }
 
     function updateLead(id, field, value) {
@@ -378,7 +421,7 @@
         id: Date.now(), priority: document.getElementById('newPriority').value, company: document.getElementById('newCompany').value,
         segment, contact: document.getElementById('newContact').value, title: document.getElementById('newTitle').value,
         phone: document.getElementById('newPhone').value, email: document.getElementById('newEmail').value, city: document.getElementById('newCity').value,
-        status: 'New Lead', lastContact: '', nextFollowUp: document.getElementById('newFollowUp').value, notes: document.getElementById('newNotes').value,
+        status: 'New Lead', vendorStatus: document.getElementById('newVendorStatus').value, lastContact: '', nextFollowUp: document.getElementById('newFollowUp').value, notes: document.getElementById('newNotes').value,
         portfolioType: segment + ' Portfolio', multipleProperties: true
       });
       saveData(); closeModal(); renderLeads();
@@ -405,8 +448,8 @@
     function renderProposals() { proposalTable.innerHTML = proposals.map(p => `<tr><td class="p-3 font-bold">${p.company}</td><td class="p-3">${p.property}</td><td class="p-3 font-bold">${p.amount.toLocaleString('en-US',{style:'currency',currency:'USD'})}</td><td class="p-3">${p.date}</td><td class="p-3">${p.status}</td><td class="p-3">${p.followUp}</td></tr>`).join(''); }
 
     function exportCSV() {
-      const headers = ['Priority','Company','Segment','Contact','Title','Phone','Email','City','Status','Lead Score','Last Contact','Next Follow Up','Notes'];
-      const rows = leads.map(l => [l.priority,l.company,l.segment,l.contact,l.title,l.phone,l.email,l.city,l.status,calculateScore(l),l.lastContact,l.nextFollowUp,l.notes]);
+      const headers = ['Priority','Company','Vendor Status','Segment','Contact','Title','Phone','Email','City','Status','Lead Score','Last Contact','Next Follow Up','Notes'];
+      const rows = leads.map(l => [l.priority,l.company,l.vendorStatus || 'Not Started',l.segment,l.contact,l.title,l.phone,l.email,l.city,l.status,calculateScore(l),l.lastContact,l.nextFollowUp,l.notes]);
       const csv = [headers, ...rows].map(row => row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], {type:'text/csv'});
       const url = URL.createObjectURL(blob);
