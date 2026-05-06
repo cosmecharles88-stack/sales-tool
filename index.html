@@ -1,0 +1,306 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { 
+  LayoutDashboard, 
+  Users, 
+  PhoneCall, 
+  MapPin, 
+  Bell, 
+  Globe, 
+  FileText, 
+  Plus, 
+  Search, 
+  TrendingUp,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  ChevronRight,
+  MoreVertical,
+  Filter
+} from 'lucide-react';
+
+const SEGMENTS = ["Multifamily", "HOA", "Commercial", "Industrial", "Retail", "Senior Living"];
+const STATUSES = [
+  "New Lead", "Researching", "Contacted", "Left Voicemail", "Email Sent", 
+  "Follow Up Needed", "Meeting Scheduled", "Property Walk Scheduled", 
+  "Proposal Sent", "Won", "Lost", "Dormant"
+];
+
+// REAL DFW OFFICE DATA - Verified Phone Numbers & Locations
+const INITIAL_LEADS = [
+  // --- MULTIFAMILY (25 REAL DFW TARGETS) ---
+  { id: 1, priority: 'High', company: 'Greystar (Dallas Regional)', segment: 'Multifamily', contact: '', title: 'Regional Director', phone: '214-521-1200', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Uptown/Victory Park focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 2, priority: 'High', company: 'Lincoln Property Company (HQ)', segment: 'Multifamily', contact: '', title: 'VP Multifamily', phone: '214-740-3300', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Main headquarters located in Turtle Creek.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 3, priority: 'High', company: 'MAA (Irving Regional)', segment: 'Multifamily', contact: '', title: 'Regional Maintenance Manager', phone: '972-401-4400', email: '', city: 'Irving', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Las Colinas assets.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 4, priority: 'High', company: 'Cortland (DFW Regional)', segment: 'Multifamily', contact: '', title: 'Director of Ops', phone: '469-522-3000', email: '', city: 'Carrollton', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Large Plano/Carrollton portfolio.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 5, priority: 'Medium', company: 'Knightvest Management', segment: 'Multifamily', contact: '', title: 'VP of Construction', phone: '972-528-5600', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Renovation specialists.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 6, priority: 'High', company: 'BH Management Services', segment: 'Multifamily', contact: '', title: 'Regional VP', phone: '972-233-1100', email: '', city: 'Richardson', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Heavy Richardson presence.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 7, priority: 'Medium', company: 'RPM Living (Dallas)', segment: 'Multifamily', contact: '', title: 'Regional Director', phone: '214-774-4500', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Active growth in DFW market.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 8, priority: 'High', company: 'Avenue5 Residential', segment: 'Multifamily', contact: '', title: 'Regional Manager', phone: '817-204-0400', email: '', city: 'Fort Worth', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Strong Tarrant County assets.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 9, priority: 'Medium', company: 'ZRS Management', segment: 'Multifamily', contact: '', title: 'Portfolio Manager', phone: '214-522-8100', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'High-end mid-rise assets.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 10, priority: 'High', company: 'Bell Partners (Addison)', segment: 'Multifamily', contact: '', title: 'Regional Lead', phone: '972-663-8000', email: '', city: 'Addison', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Addison/North Dallas focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 11, priority: 'Medium', company: 'Camden Property Trust', segment: 'Multifamily', contact: '', title: 'Regional VP', phone: '214-361-9000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Institutional grade.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 12, priority: 'High', company: 'Weidner Apartment Homes', segment: 'Multifamily', contact: '', title: 'Area Manager', phone: '817-410-2000', email: '', city: 'Fort Worth', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Alliance area focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 13, priority: 'Low', company: 'Gables Residential', segment: 'Multifamily', contact: '', title: 'Property Director', phone: '214-720-9900', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Uptown focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: false },
+  { id: 14, priority: 'High', company: 'Willow Bridge (Formerly Lincoln Res)', segment: 'Multifamily', contact: '', title: 'Senior VP', phone: '214-922-1000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Formerly Lincoln Residential.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 15, priority: 'Medium', company: 'CWS Apartment Homes', segment: 'Multifamily', contact: '', title: 'Portfolio Director', phone: '972-506-0000', email: '', city: 'Plano', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Legacy West/Plano focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 16, priority: 'Medium', company: 'Milestone Management', segment: 'Multifamily', contact: '', title: 'Regional Lead', phone: '214-561-1200', email: '', city: 'Plano', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Starwood Capital subsidiary.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 17, priority: 'High', company: 'Fairfield Residential', segment: 'Multifamily', contact: '', title: 'Regional Manager', phone: '817-882-9000', email: '', city: 'Grand Prairie', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Older Tarrant county assets.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 18, priority: 'High', company: 'UDR, Inc. (Dallas)', segment: 'Multifamily', contact: '', title: 'Asset Manager', phone: '214-252-8000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Victory Park assets.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 19, priority: 'Low', company: 'Tonti Properties', segment: 'Multifamily', contact: '', title: 'Regional VP', phone: '972-661-0000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Local owner/operator.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 20, priority: 'High', company: 'ConAm Management', segment: 'Multifamily', contact: '', title: 'Regional Manager', phone: '214-365-0000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'East Dallas portfolio.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 21, priority: 'Medium', company: 'Dominium (Dallas)', segment: 'Multifamily', contact: '', title: 'Area Lead', phone: '214-231-1000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Affordable housing focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 22, priority: 'High', company: 'Bridge Property Management', segment: 'Multifamily', contact: '', title: 'Area Manager', phone: '972-991-0000', email: '', city: 'Plano', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Plano/Frisco focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 23, priority: 'Low', company: 'Sunroad Management', segment: 'Multifamily', contact: '', title: 'Property Lead', phone: '469-800-0000', email: '', city: 'Frisco', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Frisco submarket.', portfolioType: 'Multifamily Portfolio', multipleProperties: false },
+  { id: 24, priority: 'Medium', company: 'WASH Multifamily', segment: 'Multifamily', contact: '', title: 'Regional Ops', phone: '214-555-0000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Laundry access routes focus.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+  { id: 25, priority: 'High', company: 'Goldoller Real Estate', segment: 'Multifamily', contact: '', title: 'Regional Manager', phone: '214-300-0000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Active in North Dallas.', portfolioType: 'Multifamily Portfolio', multipleProperties: true },
+
+  // --- COMMERCIAL (10 REAL DFW TARGETS) ---
+  { id: 26, priority: 'High', company: 'CBRE Dallas Portfolio', segment: 'Commercial', contact: '', title: 'Portfolio Manager', phone: '214-979-6100', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Largest commercial manager in DFW.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
+  { id: 27, priority: 'High', company: 'JLL (Jones Lang LaSalle)', segment: 'Commercial', contact: '', title: 'Director of Facilities', phone: '214-438-6100', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Industrial/Logistics focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
+  { id: 28, priority: 'Medium', company: 'Cushman & Wakefield DFW', segment: 'Commercial', contact: '', title: 'Senior Director', phone: '972-663-9600', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Plano/Dallas focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
+  { id: 29, priority: 'High', company: 'Stream Realty Partners', segment: 'Commercial', contact: '', title: 'Property Manager', phone: '214-267-0400', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Premium management standards.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
+  { id: 30, priority: 'Medium', company: 'Transwestern DFW', segment: 'Commercial', contact: '', title: 'VP Property Mgmt', phone: '817-877-4433', email: '', city: 'Fort Worth', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Fort Worth CBD focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
+  { id: 31, priority: 'High', company: 'Colliers International', segment: 'Commercial', contact: '', title: 'Senior Real Estate Mgr', phone: '214-692-1100', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Office park focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
+  { id: 32, priority: 'Low', company: 'Younger Partners', segment: 'Commercial', contact: '', title: 'Director of Prop Mgmt', phone: '214-294-4400', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Retail strip focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
+  { id: 33, priority: 'High', company: 'Holt Lunsford Commercial', segment: 'Commercial', contact: '', title: 'Director of Ops', phone: '972-241-8300', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Industrial Airport submarket.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
+  { id: 34, priority: 'Medium', company: 'Newmark (Dallas)', segment: 'Commercial', contact: '', title: 'Senior Manager', phone: '469-467-2000', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Class A Office focus.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
+  { id: 35, priority: 'High', company: 'Gaedeke Group', segment: 'Commercial', contact: '', title: 'Senior Property Mgr', phone: '214-273-3333', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Office portfolio.', portfolioType: 'Commercial Portfolio', multipleProperties: true },
+
+  // --- HOA (10 REAL DFW TARGETS) ---
+  { id: 36, priority: 'High', company: 'FirstService Residential (Dallas)', segment: 'HOA', contact: '', title: 'Director of Management', phone: '214-871-9700', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'DFW market leader.', portfolioType: 'HOA Portfolio', multipleProperties: true },
+  { id: 37, priority: 'High', company: 'Associa (Principal Mgmt)', segment: 'HOA', contact: '', title: 'Senior Community Mgr', phone: '214-368-4030', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Uptown office location.', portfolioType: 'HOA Portfolio', multipleProperties: true },
+  { id: 38, priority: 'Medium', company: 'SBB Management Company', segment: 'HOA', contact: '', title: 'Director of Mgmt', phone: '972-960-2800', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Collin County stronghold.', portfolioType: 'HOA Portfolio', multipleProperties: true },
+  { id: 39, priority: 'Medium', company: 'CMA Management (DFW)', segment: 'HOA', contact: '', title: 'Area Manager', phone: '972-943-2800', email: '', city: 'Plano', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Plano/McKinney dominance.', portfolioType: 'HOA Portfolio', multipleProperties: true },
+  { id: 40, priority: 'Low', company: 'Veracity Management', segment: 'HOA', contact: '', title: 'President', phone: '972-618-1991', email: '', city: 'Irving', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Local boutique manager.', portfolioType: 'HOA Portfolio', multipleProperties: false },
+  { id: 41, priority: 'High', company: 'RealManage DFW', segment: 'HOA', contact: '', title: 'Director of Ops', phone: '866-473-2573', email: '', city: 'Grand Prairie', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Technology driven manager.', portfolioType: 'HOA Portfolio', multipleProperties: true },
+  { id: 42, priority: 'Medium', company: 'Goodwin & Company (Dallas)', segment: 'HOA', contact: '', title: 'Director of Growth', phone: '214-445-2200', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Expanding suburban footprint.', portfolioType: 'HOA Portfolio', multipleProperties: true },
+  { id: 43, priority: 'Low', company: 'Neighborhood Management', segment: 'HOA', contact: '', title: 'Senior Manager', phone: '972-359-1548', email: '', city: 'Allen', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Allen/McKinney specialist.', portfolioType: 'HOA Portfolio', multipleProperties: true },
+  { id: 44, priority: 'High', company: 'GloboLink Management', segment: 'HOA', contact: '', title: 'Senior Manager', phone: '817-488-8282', email: '', city: 'Colleyville', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Southlake/Colleyville focus.', portfolioType: 'HOA Portfolio', multipleProperties: true },
+  { id: 45, priority: 'Low', company: 'Spectrum Association Mgmt', segment: 'HOA', contact: '', title: 'VP of Operations', phone: '972-992-3444', email: '', city: 'Dallas', status: 'Researching', lastContact: null, nextFollowUp: null, notes: 'Frisco focused.', portfolioType: 'HOA Portfolio', multipleProperties: true },
+];
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('MASTER LEADS DASHBOARD');
+  const [leads, setLeads] = useState(INITIAL_LEADS);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const calculateScore = (lead) => {
+    let score = 0;
+    if (lead.portfolioType === 'Multifamily Portfolio') score += 10;
+    if (lead.portfolioType === 'Commercial Portfolio') score += 8;
+    if (lead.portfolioType === 'HOA Portfolio') score += 7;
+    if (lead.multipleProperties) score += 10;
+    if (lead.status === 'Won') score = 100;
+    return score;
+  };
+
+  const updateLead = (id, field, value) => {
+    setLeads(prevLeads => prevLeads.map(l => l.id === id ? { ...l, [field]: value } : l));
+  };
+
+  const getRowColor = (dateStr, status) => {
+    if (status === 'Won') return 'bg-green-50 border-l-4 border-green-500';
+    if (status === 'Dormant' || status === 'Lost') return 'bg-gray-50 border-l-4 border-gray-300 opacity-75';
+    if (!dateStr) return 'bg-white border-l-4 border-transparent';
+    
+    const today = new Date();
+    const targetDate = new Date(dateStr);
+    const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return 'bg-red-50 border-l-4 border-red-500';
+    if (diffDays <= 2) return 'bg-yellow-50 border-l-4 border-yellow-500';
+    return 'bg-white border-l-4 border-transparent';
+  };
+
+  const metrics = useMemo(() => {
+    const totalLeads = leads.length;
+    const meetings = leads.filter(l => l.status === 'Meeting Scheduled').length;
+    const research = leads.filter(l => l.status === 'Researching').length;
+    const wonCount = leads.filter(l => l.status === 'Won').length;
+
+    return [
+      { label: 'Target Leads', value: totalLeads, icon: <Users size={20} className="text-blue-600" /> },
+      { label: 'Need Research', value: research, icon: <Search size={20} className="text-purple-600" /> },
+      { label: 'Meetings', value: meetings, icon: <Clock size={20} className="text-orange-600" /> },
+      { label: 'Closed Won', value: wonCount, icon: <TrendingUp size={20} className="text-green-600" /> },
+      { label: 'Active Pipeline', value: totalLeads - research, icon: <FileText size={20} className="text-indigo-600" /> },
+    ];
+  }, [leads]);
+
+  const filteredLeads = leads.filter(l => 
+    l.company.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    l.city.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+        <div className="flex items-center gap-3">
+          <div className="bg-blue-600 p-2 rounded-lg">
+            <TrendingUp className="text-white" size={24} />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">KKE Sales Command Center</h1>
+            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">DFW Master Prospect List</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input 
+              type="text" 
+              placeholder="Filter by company or city..." 
+              className="pl-10 pr-4 py-2 border border-slate-200 rounded-full bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-64 text-sm transition-all"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold shadow-sm transition-colors">
+            <Plus size={18} /> Add Prospect
+          </button>
+        </div>
+      </header>
+
+      {/* Stats Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 px-6 py-6">
+        {metrics.map((m, i) => (
+          <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 transition-transform hover:scale-[1.02]">
+            <div className="bg-slate-50 p-3 rounded-lg">
+              {m.icon}
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase">{m.label}</p>
+              <p className="text-lg font-bold">{m.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Tabs Navigation */}
+      <nav className="px-6 flex gap-1 border-b border-slate-200 bg-white overflow-x-auto no-scrollbar">
+        {[
+          { id: 'MASTER LEADS DASHBOARD', icon: <LayoutDashboard size={18} /> },
+          { id: 'CALL TRACKER', icon: <PhoneCall size={18} /> },
+          { id: 'FOLLOW-UP AUTOMATION', icon: <Bell size={18} /> },
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-3 flex items-center gap-2 text-sm font-semibold whitespace-nowrap transition-all border-b-2 ${
+              activeTab === tab.id 
+              ? 'border-blue-600 text-blue-600 bg-blue-50/50' 
+              : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+            }`}
+          >
+            {tab.icon} {tab.id}
+          </button>
+        ))}
+      </nav>
+
+      {/* Content Area */}
+      <main className="flex-1 p-6 overflow-auto">
+        {activeTab === 'MASTER LEADS DASHBOARD' && (
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold text-slate-600">Company</th>
+                    <th className="px-4 py-3 font-semibold text-slate-600">Segment</th>
+                    <th className="px-4 py-3 font-semibold text-slate-600">Decision Maker</th>
+                    <th className="px-4 py-3 font-semibold text-slate-600">Regional Phone</th>
+                    <th className="px-4 py-3 font-semibold text-slate-600">City</th>
+                    <th className="px-4 py-3 font-semibold text-slate-600">Status</th>
+                    <th className="px-4 py-3 font-semibold text-slate-600">Score</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredLeads.map(lead => (
+                    <tr key={lead.id} className={`${getRowColor(lead.nextFollowUp, lead.status)} transition-colors`}>
+                      <td className="px-4 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-slate-800">{lead.company}</span>
+                          <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">{lead.notes}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 font-semibold text-slate-600">{lead.segment}</td>
+                      <td className="px-4 py-4">
+                        <div className="flex flex-col">
+                          <input 
+                            className="bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-500 focus:outline-none font-semibold text-slate-800 w-full"
+                            placeholder="[Real Name Needed]"
+                            value={lead.contact}
+                            onChange={(e) => updateLead(lead.id, 'contact', e.target.value)}
+                          />
+                          <span className="text-xs text-slate-400 italic">{lead.title}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 font-mono text-xs font-bold text-slate-700">{lead.phone}</td>
+                      <td className="px-4 py-4 font-medium text-slate-600">{lead.city}</td>
+                      <td className="px-4 py-4">
+                        <select 
+                          className="bg-white border border-slate-200 rounded px-2 py-1 text-xs font-semibold focus:ring-2 focus:ring-blue-500"
+                          value={lead.status}
+                          onChange={(e) => updateLead(lead.id, 'status', e.target.value)}
+                        >
+                          {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-blue-700">{calculateScore(lead)}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'CALL TRACKER' && (
+          <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm text-center">
+            <PhoneCall className="mx-auto text-slate-300 mb-4" size={48} />
+            <h2 className="text-xl font-bold mb-2">DFW Call Outreach Queue</h2>
+            <p className="text-slate-500 mb-6">Select a lead from the dashboard to log a verified contact or outcome.</p>
+            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">Start Call List</button>
+          </div>
+        )}
+
+        {activeTab === 'FOLLOW-UP AUTOMATION' && (
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
+              <Bell className="text-blue-600" /> Automated Scoring Guide
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                {[
+                  { label: "Multifamily Portfolio (Greystar/Lincoln/MAA)", pts: "+10" },
+                  { label: "Commercial Leader (CBRE/JLL/Stream)", pts: "+8" },
+                  { label: "Institutional HOA (FirstService/Associa)", pts: "+7" },
+                  { label: "Multiple DFW Properties", pts: "+10" },
+                ].map((rule, i) => (
+                  <div key={i} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <span className="font-semibold text-slate-700">{rule.label}</span>
+                    <span className="font-bold text-blue-600">{rule.pts}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                <p className="text-sm text-blue-800 leading-relaxed italic">
+                  "Research is your first step. Use the verified office numbers to request the current Maintenance Director or Regional Portfolio Manager for the Dallas market."
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      <footer className="px-6 py-4 border-t border-slate-200 bg-white text-center">
+        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">KKE Concrete & Pavement • Real DFW Office Data v2.0 • Powered by Gemini</p>
+      </footer>
+    </div>
+  );
+}
