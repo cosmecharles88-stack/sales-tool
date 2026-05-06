@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KKE Property Management CRM</title>
+  <title>KKE Sales Command Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,8 +15,37 @@
     .modal-bg { background: rgba(15, 23, 42, 0.65); }
   </style>
 </head>
+
 <body class="bg-slate-50 text-slate-900">
-  <div class="min-h-screen flex flex-col">
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-slate-100">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-xl border border-slate-200 p-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="bg-blue-700 p-3 rounded-xl shadow-sm">
+          <span class="text-white font-black text-xl">KKE</span>
+        </div>
+        <div>
+          <h1 class="text-2xl font-black tracking-tight">Sales Command Center</h1>
+          <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Secure Team Login</p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <input id="loginEmail" type="email" placeholder="Email" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        <input id="loginPassword" type="password" placeholder="Password" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        <button id="loginBtn" class="w-full bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-xl font-black">Log In</button>
+        <p id="loginError" class="hidden text-sm font-bold text-red-700 bg-red-50 border border-red-100 rounded-xl p-3"></p>
+      </div>
+
+      <p class="text-xs text-slate-500 mt-6 leading-relaxed">
+        This version syncs CRM data through Firebase Firestore. Any approved user who logs in will see shared lead updates.
+      </p>
+    </div>
+  </div>
+
+  <!-- APP SCREEN -->
+  <div id="appScreen" class="hidden min-h-screen flex flex-col">
     <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 sticky top-0 z-30">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div class="flex items-center gap-3">
@@ -25,19 +54,20 @@
           </div>
           <div>
             <h1 class="text-xl md:text-2xl font-black tracking-tight">KKE Sales Command Center</h1>
-            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">North Texas Property Management Pipeline</p>
+            <p id="userStatus" class="text-xs text-slate-500 font-bold uppercase tracking-wider">North Texas Property Management Pipeline</p>
           </div>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3">
-          <div class="relative">
-            <input id="searchInput" type="text" placeholder="Search company, city, segment..." class="w-full sm:w-72 pl-4 pr-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm" />
-          </div>
+          <input id="searchInput" type="text" placeholder="Search company, vendor status, city, segment..." class="w-full sm:w-80 pl-4 pr-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm" />
           <button onclick="openModal()" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm">+ Add Prospect</button>
+          <button id="seedBtn" class="hidden bg-green-700 hover:bg-green-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm">Seed Default Leads</button>
+          <button id="logoutBtn" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm">Logout</button>
         </div>
       </div>
     </header>
 
+    <!-- METRICS -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-4 md:p-6">
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <p class="text-xs font-bold text-slate-500 uppercase">Target Leads</p>
@@ -61,6 +91,7 @@
       </div>
     </section>
 
+    <!-- NAV -->
     <nav class="px-4 md:px-6 flex gap-1 border-b border-slate-200 bg-white overflow-x-auto no-scrollbar">
       <button data-tab="leads" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-blue-700 text-blue-700 bg-blue-50">Master Leads Dashboard</button>
       <button data-tab="calls" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Call Tracker</button>
@@ -71,15 +102,18 @@
     </nav>
 
     <main class="flex-1 p-4 md:p-6">
+
+      <!-- LEADS TAB -->
       <section id="tab-leads" class="tab-panel">
         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
           <div class="p-4 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div>
               <h2 class="font-black text-lg">Master Leads Dashboard</h2>
-              <p class="text-sm text-slate-500">Use this as your main command center for North Texas outreach.</p>
+              <p class="text-sm text-slate-500">Live cloud-synced lead data. Changes update across logged-in users.</p>
             </div>
             <button onclick="exportCSV()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold">Export CSV</button>
           </div>
+
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
               <thead class="bg-slate-100 border-b border-slate-200">
@@ -106,53 +140,123 @@
         </div>
       </section>
 
+      <!-- CALL TRACKER -->
       <section id="tab-calls" class="tab-panel hidden">
         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
           <div class="p-4 border-b border-slate-200">
             <h2 class="font-black text-lg">Call Tracker</h2>
             <p class="text-sm text-slate-500">Log every touchpoint and set your next follow-up date.</p>
           </div>
+
           <div class="p-4 grid grid-cols-1 md:grid-cols-6 gap-3 border-b border-slate-200">
             <input id="callDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
             <input id="callCompany" placeholder="Company" class="border rounded-xl px-3 py-2 text-sm" />
             <input id="callContact" placeholder="Contact" class="border rounded-xl px-3 py-2 text-sm" />
+
             <select id="callOutcome" class="border rounded-xl px-3 py-2 text-sm">
-              <option>No Answer</option><option>Gatekeeper</option><option>Left Voicemail</option><option>Interested</option><option>Not Interested</option><option>Needs Follow Up</option><option>Wants Proposal</option><option>Wants Site Visit</option>
+              <option>No Answer</option>
+              <option>Gatekeeper</option>
+              <option>Left Voicemail</option>
+              <option>Interested</option>
+              <option>Not Interested</option>
+              <option>Needs Follow Up</option>
+              <option>Wants Proposal</option>
+              <option>Wants Site Visit</option>
             </select>
+
             <input id="callFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm" />
             <button onclick="addCall()" class="bg-blue-700 text-white rounded-xl font-bold text-sm">Add Call</button>
             <textarea id="callNotes" placeholder="Notes" class="md:col-span-6 border rounded-xl px-3 py-2 text-sm"></textarea>
           </div>
+
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
-              <thead class="bg-slate-100"><tr><th class="p-3 text-left">Date</th><th class="p-3 text-left">Company</th><th class="p-3 text-left">Contact</th><th class="p-3 text-left">Outcome</th><th class="p-3 text-left">Follow Up</th><th class="p-3 text-left">Notes</th></tr></thead>
+              <thead class="bg-slate-100">
+                <tr>
+                  <th class="p-3 text-left">Date</th>
+                  <th class="p-3 text-left">Company</th>
+                  <th class="p-3 text-left">Contact</th>
+                  <th class="p-3 text-left">Outcome</th>
+                  <th class="p-3 text-left">Follow Up</th>
+                  <th class="p-3 text-left">Notes</th>
+                </tr>
+              </thead>
               <tbody id="callsTable" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
       </section>
 
+      <!-- PROPERTY WALK TRACKER -->
       <section id="tab-walks" class="tab-panel hidden">
         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
           <div class="p-4 border-b border-slate-200">
             <h2 class="font-black text-lg">Property Walk Tracker</h2>
             <p class="text-sm text-slate-500">Track site walks, issues found, risk level, and proposal needs.</p>
           </div>
+
           <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-3 border-b border-slate-200">
             <input id="walkProperty" placeholder="Property" class="border rounded-xl px-3 py-2 text-sm" />
             <input id="walkManager" placeholder="Manager" class="border rounded-xl px-3 py-2 text-sm" />
             <input id="walkDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
-            <select id="walkType" class="border rounded-xl px-3 py-2 text-sm"><option>Multifamily</option><option>HOA</option><option>Commercial</option><option>Retail</option><option>Industrial</option><option>Senior Living</option></select>
-            <select id="walkIssue" class="border rounded-xl px-3 py-2 text-sm"><option>Sidewalk Settlement</option><option>ADA Trip Hazard</option><option>Pool Deck</option><option>Dumpster Pad</option><option>Parking Lot Settlement</option><option>Void Filling</option><option>Curb/Gutter</option><option>Loading Dock</option><option>Entryway Settlement</option></select>
-            <select id="walkRisk" class="border rounded-xl px-3 py-2 text-sm"><option>Low</option><option>Medium</option><option>High</option><option>Urgent</option></select>
-            <label class="flex items-center gap-2 text-sm font-bold"><input id="walkProposal" type="checkbox" /> Proposal Needed</label>
+
+            <select id="walkType" class="border rounded-xl px-3 py-2 text-sm">
+              <option>Multifamily</option>
+              <option>HOA</option>
+              <option>Commercial</option>
+              <option>Retail</option>
+              <option>Industrial</option>
+              <option>Senior Living</option>
+            </select>
+
+            <select id="walkIssue" class="border rounded-xl px-3 py-2 text-sm">
+              <option>Sidewalk Settlement</option>
+              <option>ADA Trip Hazard</option>
+              <option>Pool Deck</option>
+              <option>Dumpster Pad</option>
+              <option>Parking Lot Settlement</option>
+              <option>Void Filling</option>
+              <option>Curb/Gutter</option>
+              <option>Loading Dock</option>
+              <option>Entryway Settlement</option>
+            </select>
+
+            <select id="walkRisk" class="border rounded-xl px-3 py-2 text-sm">
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Urgent</option>
+            </select>
+
+            <label class="flex items-center gap-2 text-sm font-bold">
+              <input id="walkProposal" type="checkbox" /> Proposal Needed
+            </label>
+
             <button onclick="addWalk()" class="bg-blue-700 text-white rounded-xl font-bold text-sm">Add Walk</button>
             <input id="walkFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm md:col-span-4" />
           </div>
-          <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="p-3 text-left">Property</th><th class="p-3 text-left">Manager</th><th class="p-3 text-left">Date</th><th class="p-3 text-left">Type</th><th class="p-3 text-left">Issues</th><th class="p-3 text-left">Risk</th><th class="p-3 text-left">Proposal</th><th class="p-3 text-left">Follow Up</th></tr></thead><tbody id="walksTable" class="divide-y divide-slate-100"></tbody></table></div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-100">
+                <tr>
+                  <th class="p-3 text-left">Property</th>
+                  <th class="p-3 text-left">Manager</th>
+                  <th class="p-3 text-left">Date</th>
+                  <th class="p-3 text-left">Type</th>
+                  <th class="p-3 text-left">Issues</th>
+                  <th class="p-3 text-left">Risk</th>
+                  <th class="p-3 text-left">Proposal</th>
+                  <th class="p-3 text-left">Follow Up</th>
+                </tr>
+              </thead>
+              <tbody id="walksTable" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
+      <!-- FOLLOW UP AUTOMATION -->
       <section id="tab-followups" class="tab-panel hidden">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
@@ -167,6 +271,7 @@
               <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Property Walk Scheduled</span><b class="text-blue-700">+30</b></div>
             </div>
           </div>
+
           <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
             <h2 class="font-black text-lg mb-4">Hot Leads</h2>
             <div id="hotLeads" class="space-y-3"></div>
@@ -174,48 +279,105 @@
         </div>
       </section>
 
+      <!-- ASSOCIATIONS -->
       <section id="tab-associations" class="tab-panel hidden">
         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
           <h2 class="font-black text-lg mb-4">Association Networking</h2>
-          <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="p-3 text-left">Organization</th><th class="p-3 text-left">Event</th><th class="p-3 text-left">Date</th><th class="p-3 text-left">Attending</th><th class="p-3 text-left">Contacts Made</th><th class="p-3 text-left">Follow Up</th></tr></thead><tbody id="assocTable"></tbody></table></div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-100">
+                <tr>
+                  <th class="p-3 text-left">Organization</th>
+                  <th class="p-3 text-left">Event</th>
+                  <th class="p-3 text-left">Date</th>
+                  <th class="p-3 text-left">Attending</th>
+                  <th class="p-3 text-left">Contacts Made</th>
+                  <th class="p-3 text-left">Follow Up</th>
+                </tr>
+              </thead>
+              <tbody id="assocTable"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
+      <!-- PROPOSALS -->
       <section id="tab-proposals" class="tab-panel hidden">
         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
           <div class="p-4 border-b border-slate-200">
             <h2 class="font-black text-lg">Proposal Tracker</h2>
           </div>
+
           <div class="p-4 grid grid-cols-1 md:grid-cols-6 gap-3 border-b border-slate-200">
             <input id="proposalCompany" placeholder="Company" class="border rounded-xl px-3 py-2 text-sm" />
             <input id="proposalProperty" placeholder="Property" class="border rounded-xl px-3 py-2 text-sm" />
             <input id="proposalAmount" type="number" placeholder="Amount" class="border rounded-xl px-3 py-2 text-sm" />
             <input id="proposalDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
-            <select id="proposalStatus" class="border rounded-xl px-3 py-2 text-sm"><option>Drafting</option><option>Sent</option><option>Reviewing</option><option>Negotiating</option><option>Approved</option><option>Rejected</option></select>
+
+            <select id="proposalStatus" class="border rounded-xl px-3 py-2 text-sm">
+              <option>Drafting</option>
+              <option>Sent</option>
+              <option>Reviewing</option>
+              <option>Negotiating</option>
+              <option>Approved</option>
+              <option>Rejected</option>
+            </select>
+
             <button onclick="addProposal()" class="bg-blue-700 text-white rounded-xl font-bold text-sm">Add Proposal</button>
             <input id="proposalFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm md:col-span-6" />
           </div>
-          <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="p-3 text-left">Company</th><th class="p-3 text-left">Property</th><th class="p-3 text-left">Amount</th><th class="p-3 text-left">Date Sent</th><th class="p-3 text-left">Status</th><th class="p-3 text-left">Follow Up</th></tr></thead><tbody id="proposalTable" class="divide-y divide-slate-100"></tbody></table></div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-100">
+                <tr>
+                  <th class="p-3 text-left">Company</th>
+                  <th class="p-3 text-left">Property</th>
+                  <th class="p-3 text-left">Amount</th>
+                  <th class="p-3 text-left">Date Sent</th>
+                  <th class="p-3 text-left">Status</th>
+                  <th class="p-3 text-left">Follow Up</th>
+                </tr>
+              </thead>
+              <tbody id="proposalTable" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
         </div>
       </section>
     </main>
   </div>
 
+  <!-- ADD LEAD MODAL -->
   <div id="leadModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-bg">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-6">
       <div class="flex justify-between items-center mb-5">
         <h2 class="text-xl font-black">Add New Prospect</h2>
         <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-2xl">&times;</button>
       </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <select id="newPriority" class="border rounded-xl px-3 py-2 text-sm"><option>High</option><option>Medium</option><option>Low</option></select>
-        <select id="newSegment" class="border rounded-xl px-3 py-2 text-sm"><option>Multifamily</option><option>HOA</option><option>Commercial</option><option>Industrial</option><option>Retail</option><option>Senior Living</option></select>
+        <select id="newPriority" class="border rounded-xl px-3 py-2 text-sm">
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+
+        <select id="newSegment" class="border rounded-xl px-3 py-2 text-sm">
+          <option>Multifamily</option>
+          <option>HOA</option>
+          <option>Commercial</option>
+          <option>Industrial</option>
+          <option>Retail</option>
+          <option>Senior Living</option>
+        </select>
+
         <input id="newCompany" placeholder="Company Name" class="md:col-span-2 border rounded-xl px-3 py-2 text-sm" />
         <input id="newContact" placeholder="Contact Name" class="border rounded-xl px-3 py-2 text-sm" />
         <input id="newTitle" placeholder="Title" class="border rounded-xl px-3 py-2 text-sm" />
         <input id="newPhone" placeholder="Phone" class="border rounded-xl px-3 py-2 text-sm" />
         <input id="newEmail" placeholder="Email" class="border rounded-xl px-3 py-2 text-sm" />
         <input id="newCity" placeholder="City" class="border rounded-xl px-3 py-2 text-sm" />
+
         <select id="newVendorStatus" class="border rounded-xl px-3 py-2 text-sm">
           <option>Not Started</option>
           <option>Need Vendor Portal</option>
@@ -232,15 +394,49 @@
           <option>Rejected / Not Accepted</option>
           <option>Dormant Vendor</option>
         </select>
+
         <input id="newFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm" />
         <textarea id="newNotes" placeholder="Notes" class="md:col-span-2 border rounded-xl px-3 py-2 text-sm" rows="3"></textarea>
       </div>
+
       <button onclick="addLead()" class="w-full mt-5 bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-xl font-black">Add to Pipeline</button>
     </div>
   </div>
 
-  <script>
-    const STATUSES = ["New Lead", "Researching", "Contacted", "Left Voicemail", "Email Sent", "Follow Up Needed", "Meeting Scheduled", "Property Walk Scheduled", "Proposal Sent", "Won", "Lost", "Dormant"];
+  <!-- FIREBASE APP SCRIPT -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getFirestore, collection, doc, addDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_UZZFKE5wvbKfKuo5Q1U4FNzmvgQgjc4",
+      authDomain: "kke-sales-command-center.firebaseapp.com",
+      projectId: "kke-sales-command-center",
+      storageBucket: "kke-sales-command-center.firebasestorage.app",
+      messagingSenderId: "898170339590",
+      appId: "1:898170339590:web:7b9a7a25c7943c5e0f9e87",
+      measurementId: "G-W7BYEKDD3R"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const STATUSES = [
+      "New Lead",
+      "Researching",
+      "Contacted",
+      "Left Voicemail",
+      "Email Sent",
+      "Follow Up Needed",
+      "Meeting Scheduled",
+      "Property Walk Scheduled",
+      "Proposal Sent",
+      "Won",
+      "Lost",
+      "Dormant"
+    ];
 
     const VENDOR_STATUSES = [
       "Not Started",
@@ -260,85 +456,177 @@
     ];
 
     const defaultLeads = [
-      // 25 Multifamily companies — company-level targets. Contact names/emails intentionally blank unless verified.
-      {id:1,priority:'High',company:'Greystar',segment:'Multifamily',contact:'',title:'Managing Director / Regional Property Management',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Dallas property management presence confirmed; individual contact needed.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:2,priority:'High',company:'Lincoln Property Company',segment:'Multifamily',contact:'',title:'Multifamily / Property Management Leadership',phone:'214-740-3300',email:'info@lpc.com',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Headquarters: 8111 Douglas Avenue, Suite 600, Dallas, TX 75225.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:3,priority:'High',company:'RPM Living',segment:'Multifamily',contact:'',title:'Regional Manager / Property Management',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Dallas regional office listed at 8111 Preston Road, Suite 900.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:4,priority:'High',company:'Dominium',segment:'Multifamily',contact:'',title:'Property Management Inquiries',phone:'214-303-9011',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Dallas office: 4835 Lyndon B. Johnson Fwy, Suite 1000.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:5,priority:'High',company:'MAA',segment:'Multifamily',contact:'',title:'Regional Property Manager / Maintenance Manager',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify local office phone/contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:6,priority:'High',company:'Cortland',segment:'Multifamily',contact:'',title:'Regional Operations / Service Manager',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify local office phone/contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:7,priority:'Medium',company:'Knightvest Residential',segment:'Multifamily',contact:'',title:'Construction / Asset Management',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:8,priority:'High',company:'BH Management Services',segment:'Multifamily',contact:'',title:'Regional Manager / Maintenance Director',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:9,priority:'High',company:'Avenue5 Residential',segment:'Multifamily',contact:'',title:'Regional Manager / Facilities',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:10,priority:'Medium',company:'ZRS Management',segment:'Multifamily',contact:'',title:'Portfolio Manager',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:11,priority:'High',company:'Bell Partners',segment:'Multifamily',contact:'',title:'Regional Manager / Property Management',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:12,priority:'Medium',company:'Camden Property Trust',segment:'Multifamily',contact:'',title:'Regional Vice President / Property Manager',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:13,priority:'High',company:'Weidner Apartment Homes',segment:'Multifamily',contact:'',title:'Area Manager / Maintenance Supervisor',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:14,priority:'Medium',company:'Gables Residential',segment:'Multifamily',contact:'',title:'Property Director / Regional Manager',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:15,priority:'High',company:'Willow Bridge Property Company',segment:'Multifamily',contact:'',title:'Regional Property Management',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:16,priority:'Medium',company:'CWS Apartment Homes',segment:'Multifamily',contact:'',title:'Portfolio Director / Regional Manager',phone:'',email:'',city:'Plano',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:17,priority:'Medium',company:'Milestone Management',segment:'Multifamily',contact:'',title:'Regional Lead / Property Management',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:18,priority:'High',company:'Fairfield Residential',segment:'Multifamily',contact:'',title:'Regional Manager',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:19,priority:'High',company:'UDR, Inc.',segment:'Multifamily',contact:'',title:'Asset Manager / Property Management',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:20,priority:'Low',company:'Tonti Properties',segment:'Multifamily',contact:'',title:'Regional Manager / Property Manager',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:21,priority:'High',company:'ConAm Management',segment:'Multifamily',contact:'',title:'Regional Manager',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:22,priority:'High',company:'Bridge Property Management',segment:'Multifamily',contact:'',title:'Area Manager / Property Management',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:23,priority:'Medium',company:'CAF Management',segment:'Multifamily',contact:'',title:'Regional Manager / Maintenance Manager',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:24,priority:'Medium',company:'Valiant Residential',segment:'Multifamily',contact:'',title:'Regional Manager / Property Management',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-      {id:25,priority:'High',company:'Westdale Real Estate Investment and Management',segment:'Multifamily',contact:'',title:'Property Management / Asset Management',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Company-level multifamily/commercial target; verify contact.',portfolioType:'Multifamily Portfolio',multipleProperties:true},
-
-      // 10 Commercial managers
-      {id:26,priority:'High',company:'CBRE Dallas',segment:'Commercial',contact:'',title:'Property Manager / Facilities Manager',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Commercial real estate/property management target; verify local contact.',portfolioType:'Commercial Portfolio',multipleProperties:true},
-      {id:27,priority:'High',company:'JLL Dallas',segment:'Commercial',contact:'',title:'Director of Facilities / Property Manager',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Commercial real estate/property management target; verify local contact.',portfolioType:'Commercial Portfolio',multipleProperties:true},
-      {id:28,priority:'High',company:'Cushman & Wakefield DFW',segment:'Commercial',contact:'',title:'Senior Property Manager / Facilities',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Commercial real estate/property management target; verify local contact.',portfolioType:'Commercial Portfolio',multipleProperties:true},
-      {id:29,priority:'High',company:'Stream Realty Partners',segment:'Commercial',contact:'',title:'Property Manager / Asset Services',phone:'214-267-0400',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Corporate HQ: Trammell Crow Center, 2001 Ross Avenue, Suite 400, Dallas, TX 75201.',portfolioType:'Commercial Portfolio',multipleProperties:true},
-      {id:30,priority:'Medium',company:'Transwestern Dallas',segment:'Commercial',contact:'',title:'Asset Services / Property Management',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Dallas commercial real estate services target; verify direct contact.',portfolioType:'Commercial Portfolio',multipleProperties:true},
-      {id:31,priority:'High',company:'Colliers Dallas',segment:'Commercial',contact:'',title:'Senior Real Estate Manager / Property Manager',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Commercial real estate/property management target; verify local contact.',portfolioType:'Commercial Portfolio',multipleProperties:true},
-      {id:32,priority:'Medium',company:'Younger Partners',segment:'Commercial',contact:'',title:'Director of Property Management',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Commercial real estate target; verify contact.',portfolioType:'Commercial Portfolio',multipleProperties:true},
-      {id:33,priority:'High',company:'Holt Lunsford Commercial',segment:'Commercial',contact:'',title:'Director of Operations / Property Manager',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Commercial real estate target; verify contact.',portfolioType:'Commercial Portfolio',multipleProperties:true},
-      {id:34,priority:'Medium',company:'Newmark Dallas',segment:'Commercial',contact:'',title:'Senior Property Manager / Facilities',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Commercial real estate target; verify contact.',portfolioType:'Commercial Portfolio',multipleProperties:true},
-      {id:35,priority:'Medium',company:'Gaedeke Group',segment:'Commercial',contact:'',title:'Senior Property Manager',phone:'',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Commercial real estate target; verify contact.',portfolioType:'Commercial Portfolio',multipleProperties:true},
-
-      // 10 HOA managers
-      {id:36,priority:'High',company:'FirstService Residential Dallas',segment:'HOA',contact:'',title:'Director of Management / Community Manager',phone:'214-871-9700',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Dallas office: 14951 N. Dallas Pkwy, Ste. 600, Dallas, TX 75254.',portfolioType:'HOA Portfolio',multipleProperties:true},
-      {id:37,priority:'High',company:'Associa Principal Management Group',segment:'HOA',contact:'',title:'Senior Community Manager',phone:'214-368-4030',email:'',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Dallas HOA management company; verify current office/contact.',portfolioType:'HOA Portfolio',multipleProperties:true},
-      {id:38,priority:'High',company:'Goodwin & Company Dallas-Fort Worth',segment:'HOA',contact:'',title:'Community Association Manager / Director',phone:'214-445-2700',email:'',city:'Richardson',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Office: 2425 N Central Expressway, #500, Richardson, TX 75080.',portfolioType:'HOA Portfolio',multipleProperties:true},
-      {id:39,priority:'Medium',company:'SBB Community Management',segment:'HOA',contact:'',title:'Community Association Manager',phone:'',email:'',city:'Dallas-Fort Worth',status:'Researching',lastContact:'',nextFollowUp:'',notes:'DFW HOA management target; verify direct phone/contact.',portfolioType:'HOA Portfolio',multipleProperties:true},
-      {id:40,priority:'Medium',company:'RTI / Community Management Associates Inc. (CMA)',segment:'HOA',contact:'',title:'Area Manager / Community Manager',phone:'972-943-2800',email:'',city:'Plano',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Office listed at 1800 Preston Park Blvd, Suite 200, Plano, TX 75093.',portfolioType:'HOA Portfolio',multipleProperties:true},
-      {id:41,priority:'High',company:'RealManage DFW',segment:'HOA',contact:'',title:'Director of Operations / Community Manager',phone:'214-460-8439',email:'',city:'Rowlett',status:'Researching',lastContact:'',nextFollowUp:'',notes:'CAI DFW listing shows RealManage contact in Rowlett.',portfolioType:'HOA Portfolio',multipleProperties:true},
-      {id:42,priority:'Medium',company:'Neighborhood Management',segment:'HOA',contact:'',title:'Senior Community Manager',phone:'',email:'',city:'Allen',status:'Researching',lastContact:'',nextFollowUp:'',notes:'HOA management target; verify current phone/contact.',portfolioType:'HOA Portfolio',multipleProperties:true},
-      {id:43,priority:'Medium',company:'PMI DFW Properties',segment:'HOA',contact:'',title:'Vendor / Property Management Contact',phone:'214-427-5050',email:'info@pmidfwproperties.com',city:'Dallas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Office/mailing address listed as 305 Spring Creek Village #483, Dallas, TX 75248.',portfolioType:'HOA Portfolio',multipleProperties:true},
-      {id:44,priority:'Medium',company:'McCaw Property Management',segment:'HOA',contact:'',title:'Property Management Contact',phone:'817-491-2553',email:'office@mccawpm.com',city:'Keller',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Office: 1670 Keller Parkway, Suite 100, Keller, TX 76248.',portfolioType:'HOA Portfolio',multipleProperties:true},
-      {id:45,priority:'Low',company:'PMP Management AAMC',segment:'HOA',contact:'',title:'Community Manager / Vendor Contact',phone:'661-295-4900',email:'',city:'DFW / Texas',status:'Researching',lastContact:'',nextFollowUp:'',notes:'Listed in CAI DFW management companies; verify local DFW contact.',portfolioType:'HOA Portfolio',multipleProperties:true}
+      {id:"1",priority:"High",company:"Greystar",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Managing Director / Regional Property Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas property management presence confirmed; individual contact needed.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"2",priority:"High",company:"Lincoln Property Company",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Multifamily / Property Management Leadership",phone:"214-740-3300",email:"info@lpc.com",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Headquarters: 8111 Douglas Avenue, Suite 600, Dallas, TX 75225.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"3",priority:"High",company:"RPM Living",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Property Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas regional office listed at 8111 Preston Road, Suite 900.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"4",priority:"High",company:"Dominium",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Property Management Inquiries",phone:"214-303-9011",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas office: 4835 Lyndon B. Johnson Fwy, Suite 1000.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"5",priority:"High",company:"MAA",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Property Manager / Maintenance Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify local office phone/contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"6",priority:"High",company:"Cortland",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Operations / Service Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify local office phone/contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"7",priority:"Medium",company:"Knightvest Residential",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Construction / Asset Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"8",priority:"High",company:"BH Management Services",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Maintenance Director",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"9",priority:"High",company:"Avenue5 Residential",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Facilities",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"10",priority:"Medium",company:"ZRS Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Portfolio Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"11",priority:"High",company:"Bell Partners",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Property Management",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"12",priority:"Medium",company:"Camden Property Trust",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Vice President / Property Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"13",priority:"High",company:"Weidner Apartment Homes",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Area Manager / Maintenance Supervisor",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"14",priority:"Medium",company:"Gables Residential",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Property Director / Regional Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"15",priority:"High",company:"Willow Bridge Property Company",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Property Management",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"16",priority:"Medium",company:"CWS Apartment Homes",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Portfolio Director / Regional Manager",phone:"",email:"",city:"Plano",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"17",priority:"Medium",company:"Milestone Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Lead / Property Management",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"18",priority:"High",company:"Fairfield Residential",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"19",priority:"High",company:"UDR, Inc.",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Asset Manager / Property Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"20",priority:"Low",company:"Tonti Properties",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Property Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"21",priority:"High",company:"ConAm Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"22",priority:"High",company:"Bridge Property Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Area Manager / Property Management",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"23",priority:"Medium",company:"CAF Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Maintenance Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"24",priority:"Medium",company:"Valiant Residential",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Property Management",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"25",priority:"High",company:"Westdale Real Estate Investment and Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Property Management / Asset Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily/commercial target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
+      {id:"26",priority:"High",company:"CBRE Dallas",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Property Manager / Facilities Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate/property management target; verify local contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
+      {id:"27",priority:"High",company:"JLL Dallas",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Director of Facilities / Property Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate/property management target; verify local contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
+      {id:"28",priority:"High",company:"Cushman & Wakefield DFW",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Senior Property Manager / Facilities",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate/property management target; verify local contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
+      {id:"29",priority:"High",company:"Stream Realty Partners",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Property Manager / Asset Services",phone:"214-267-0400",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Corporate HQ: Trammell Crow Center, 2001 Ross Avenue, Suite 400, Dallas, TX 75201.",portfolioType:"Commercial Portfolio",multipleProperties:true},
+      {id:"30",priority:"Medium",company:"Transwestern Dallas",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Asset Services / Property Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas commercial real estate services target; verify direct contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
+      {id:"31",priority:"High",company:"Colliers Dallas",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Senior Real Estate Manager / Property Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate/property management target; verify local contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
+      {id:"32",priority:"Medium",company:"Younger Partners",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Director of Property Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate target; verify contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
+      {id:"33",priority:"High",company:"Holt Lunsford Commercial",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Director of Operations / Property Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate target; verify contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
+      {id:"34",priority:"Medium",company:"Newmark Dallas",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Senior Property Manager / Facilities",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate target; verify contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
+      {id:"35",priority:"Medium",company:"Gaedeke Group",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Senior Property Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate target; verify contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
+      {id:"36",priority:"High",company:"FirstService Residential Dallas",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Director of Management / Community Manager",phone:"214-871-9700",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas office: 14951 N. Dallas Pkwy, Ste. 600, Dallas, TX 75254.",portfolioType:"HOA Portfolio",multipleProperties:true},
+      {id:"37",priority:"High",company:"Associa Principal Management Group",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Senior Community Manager",phone:"214-368-4030",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas HOA management company; verify current office/contact.",portfolioType:"HOA Portfolio",multipleProperties:true},
+      {id:"38",priority:"High",company:"Goodwin & Company Dallas-Fort Worth",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Community Association Manager / Director",phone:"214-445-2700",email:"",city:"Richardson",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Office: 2425 N Central Expressway, #500, Richardson, TX 75080.",portfolioType:"HOA Portfolio",multipleProperties:true},
+      {id:"39",priority:"Medium",company:"SBB Community Management",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Community Association Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"DFW HOA management target; verify direct phone/contact.",portfolioType:"HOA Portfolio",multipleProperties:true},
+      {id:"40",priority:"Medium",company:"RTI / Community Management Associates Inc. (CMA)",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Area Manager / Community Manager",phone:"972-943-2800",email:"",city:"Plano",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Office listed at 1800 Preston Park Blvd, Suite 200, Plano, TX 75093.",portfolioType:"HOA Portfolio",multipleProperties:true},
+      {id:"41",priority:"High",company:"RealManage DFW",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Director of Operations / Community Manager",phone:"214-460-8439",email:"",city:"Rowlett",status:"Researching",lastContact:"",nextFollowUp:"",notes:"CAI DFW listing shows RealManage contact in Rowlett.",portfolioType:"HOA Portfolio",multipleProperties:true},
+      {id:"42",priority:"Medium",company:"Neighborhood Management",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Senior Community Manager",phone:"",email:"",city:"Allen",status:"Researching",lastContact:"",nextFollowUp:"",notes:"HOA management target; verify current phone/contact.",portfolioType:"HOA Portfolio",multipleProperties:true},
+      {id:"43",priority:"Medium",company:"PMI DFW Properties",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Vendor / Property Management Contact",phone:"214-427-5050",email:"info@pmidfwproperties.com",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Office/mailing address listed as 305 Spring Creek Village #483, Dallas, TX 75248.",portfolioType:"HOA Portfolio",multipleProperties:true},
+      {id:"44",priority:"Medium",company:"McCaw Property Management",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Property Management Contact",phone:"817-491-2553",email:"office@mccawpm.com",city:"Keller",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Office: 1670 Keller Parkway, Suite 100, Keller, TX 76248.",portfolioType:"HOA Portfolio",multipleProperties:true},
+      {id:"45",priority:"Low",company:"PMP Management AAMC",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Community Manager / Vendor Contact",phone:"661-295-4900",email:"",city:"DFW / Texas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Listed in CAI DFW management companies; verify local DFW contact.",portfolioType:"HOA Portfolio",multipleProperties:true}
     ];
 
-    let leads = JSON.parse(localStorage.getItem('kkeLeads')) || defaultLeads;
+    let leads = [];
+    let calls = [];
+    let walks = [];
+    let proposals = [];
+    let associations = [];
+    let unsubscribeFns = [];
+    let currentUser = null;
 
-    // Safety migration: older saved leads will not have vendorStatus yet.
-    leads = leads.map(lead => ({
-      ...lead,
-      vendorStatus: lead.vendorStatus || 'Not Started'
-    }));
-    localStorage.setItem('kkeLeads', JSON.stringify(leads));
+    window.openModal = function() {
+      document.getElementById('leadModal').classList.remove('hidden');
+      document.getElementById('leadModal').classList.add('flex');
+    };
 
-    let calls = JSON.parse(localStorage.getItem('kkeCalls')) || [];
-    let walks = JSON.parse(localStorage.getItem('kkeWalks')) || [];
-    let proposals = JSON.parse(localStorage.getItem('kkeProposals')) || [];
-    let associations = JSON.parse(localStorage.getItem('kkeAssociations')) || [
-      {organization:'BOMA Dallas',event:'',date:'',attending:'',contacts:'',followUp:''},
-      {organization:'CAI Texas',event:'',date:'',attending:'',contacts:'',followUp:''},
-      {organization:'Apartment Association of Greater Dallas',event:'',date:'',attending:'',contacts:'',followUp:''},
-      {organization:'IREM',event:'',date:'',attending:'',contacts:'',followUp:''},
-      {organization:'Vendor Expos',event:'',date:'',attending:'',contacts:'',followUp:''}
-    ];
+    window.closeModal = function() {
+      document.getElementById('leadModal').classList.add('hidden');
+      document.getElementById('leadModal').classList.remove('flex');
+    };
 
-    function saveData() {
-      localStorage.setItem('kkeLeads', JSON.stringify(leads));
-      localStorage.setItem('kkeCalls', JSON.stringify(calls));
-      localStorage.setItem('kkeWalks', JSON.stringify(walks));
-      localStorage.setItem('kkeProposals', JSON.stringify(proposals));
-      localStorage.setItem('kkeAssociations', JSON.stringify(associations));
+    function clearListeners() {
+      unsubscribeFns.forEach(fn => fn());
+      unsubscribeFns = [];
     }
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const err = document.getElementById('loginError');
+      err.classList.add('hidden');
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        err.textContent = error.message;
+        err.classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await signOut(auth);
+    });
+
+    onAuthStateChanged(auth, user => {
+      currentUser = user;
+      clearListeners();
+
+      if (user) {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('appScreen').classList.remove('hidden');
+        document.getElementById('userStatus').textContent = `Logged in as ${user.email}`;
+        startFirestoreListeners();
+      } else {
+        document.getElementById('loginScreen').classList.remove('hidden');
+        document.getElementById('appScreen').classList.add('hidden');
+      }
+    });
+
+    function startFirestoreListeners() {
+      const leadsUnsub = onSnapshot(query(collection(db, "leads")), snapshot => {
+        leads = snapshot.docs.map(d => ({
+          id: d.id,
+          ...d.data(),
+          vendorStatus: d.data().vendorStatus || "Not Started"
+        }));
+
+        leads.sort((a, b) => Number(a.id) - Number(b.id));
+        document.getElementById('seedBtn').classList.toggle('hidden', leads.length > 0);
+        renderLeads();
+      });
+
+      const callsUnsub = onSnapshot(query(collection(db, "calls"), orderBy("createdAt", "desc")), snapshot => {
+        calls = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderCalls();
+      });
+
+      const walksUnsub = onSnapshot(query(collection(db, "walks"), orderBy("createdAt", "desc")), snapshot => {
+        walks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderWalks();
+      });
+
+      const proposalsUnsub = onSnapshot(query(collection(db, "proposals"), orderBy("createdAt", "desc")), snapshot => {
+        proposals = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderProposals();
+      });
+
+      const assocUnsub = onSnapshot(query(collection(db, "associations")), snapshot => {
+        associations = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        if (associations.length === 0) {
+          associations = [
+            {organization:'BOMA Dallas',event:'',date:'',attending:'',contacts:'',followUp:''},
+            {organization:'CAI Texas',event:'',date:'',attending:'',contacts:'',followUp:''},
+            {organization:'Apartment Association of Greater Dallas',event:'',date:'',attending:'',contacts:'',followUp:''},
+            {organization:'IREM',event:'',date:'',attending:'',contacts:'',followUp:''},
+            {organization:'Vendor Expos',event:'',date:'',attending:'',contacts:'',followUp:''}
+          ];
+        }
+
+        renderAssociations();
+      });
+
+      unsubscribeFns = [leadsUnsub, callsUnsub, walksUnsub, proposalsUnsub, assocUnsub];
+    }
+
+    document.getElementById('seedBtn').addEventListener('click', async () => {
+      const existing = await getDocs(collection(db, "leads"));
+      if (!existing.empty) {
+        alert("Leads already exist. Seed cancelled to avoid duplicates.");
+        return;
+      }
+
+      const batch = writeBatch(db);
+
+      defaultLeads.forEach(lead => {
+        batch.set(doc(db, "leads", String(lead.id)), {
+          ...lead,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          updatedBy: currentUser?.email || ""
+        });
+      });
+
+      await batch.commit();
+      alert("Default lead list added to Firestore.");
+    });
 
     function calculateScore(lead) {
       let score = 0;
@@ -357,9 +645,13 @@
       if (lead.status === 'Won') return 'bg-green-50 border-l-4 border-green-600';
       if (lead.status === 'Lost' || lead.status === 'Dormant') return 'bg-gray-50 border-l-4 border-gray-400 opacity-70';
       if (!lead.nextFollowUp) return 'bg-white border-l-4 border-transparent';
-      const today = new Date(); today.setHours(0,0,0,0);
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
       const follow = new Date(lead.nextFollowUp + 'T00:00:00');
       const diff = Math.ceil((follow - today) / 86400000);
+
       if (diff < 0) return 'bg-red-50 border-l-4 border-red-600';
       if (diff <= 3) return 'bg-yellow-50 border-l-4 border-yellow-500';
       return 'bg-white border-l-4 border-transparent';
@@ -368,25 +660,69 @@
     function renderLeads() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const tbody = document.getElementById('leadsTable');
-      const filtered = leads.filter(l => [l.company,l.city,l.segment,l.status,l.vendorStatus,l.notes].join(' ').toLowerCase().includes(search));
+
+      const filtered = leads.filter(l =>
+        [
+          l.company,
+          l.city,
+          l.segment,
+          l.status,
+          l.vendorStatus,
+          l.notes
+        ].join(' ').toLowerCase().includes(search)
+      );
+
       tbody.innerHTML = filtered.map(lead => `
         <tr class="${rowClass(lead)} hover:bg-slate-50">
-          <td class="px-4 py-3 font-bold">${lead.priority}</td>
-          <td class="px-4 py-3"><b>${lead.company}</b><div class="text-[10px] uppercase text-slate-400 font-bold">${lead.notes || ''}</div></td>
-          <td class="px-4 py-3"><select class="border rounded-lg px-2 py-1 text-xs font-bold w-full" onchange="updateLead(${lead.id}, 'vendorStatus', this.value)">${VENDOR_STATUSES.map(s => `<option ${s===(lead.vendorStatus || 'Not Started')?'selected':''}>${s}</option>`).join('')}</select></td>
-          <td class="px-4 py-3 font-semibold">${lead.segment}</td>
-          <td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${lead.contact || ''}" onchange="updateLead(${lead.id}, 'contact', this.value)" placeholder="Enter name"></td>
+          <td class="px-4 py-3 font-bold">${lead.priority || ''}</td>
+          <td class="px-4 py-3">
+            <b>${lead.company || ''}</b>
+            <div class="text-[10px] uppercase text-slate-400 font-bold">${lead.notes || ''}</div>
+          </td>
+
+          <td class="px-4 py-3">
+            <select class="border rounded-lg px-2 py-1 text-xs font-bold w-full" onchange="updateLead('${lead.id}', 'vendorStatus', this.value)">
+              ${VENDOR_STATUSES.map(s => `<option ${s===(lead.vendorStatus || 'Not Started')?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </td>
+
+          <td class="px-4 py-3 font-semibold">${lead.segment || ''}</td>
+
+          <td class="px-4 py-3">
+            <input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${lead.contact || ''}" onchange="updateLead('${lead.id}', 'contact', this.value)" placeholder="Enter name">
+          </td>
+
           <td class="px-4 py-3 text-slate-600">${lead.title || ''}</td>
           <td class="px-4 py-3 font-mono text-xs font-bold whitespace-nowrap">${lead.phone || ''}</td>
-          <td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${lead.email || ''}" onchange="updateLead(${lead.id}, 'email', this.value)" placeholder="email"></td>
+
+          <td class="px-4 py-3">
+            <input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${lead.email || ''}" onchange="updateLead('${lead.id}', 'email', this.value)" placeholder="email">
+          </td>
+
           <td class="px-4 py-3">${lead.city || ''}</td>
-          <td class="px-4 py-3"><select class="border rounded-lg px-2 py-1 text-xs font-bold" onchange="updateLead(${lead.id}, 'status', this.value)">${STATUSES.map(s => `<option ${s===lead.status?'selected':''}>${s}</option>`).join('')}</select></td>
+
+          <td class="px-4 py-3">
+            <select class="border rounded-lg px-2 py-1 text-xs font-bold" onchange="updateLead('${lead.id}', 'status', this.value)">
+              ${STATUSES.map(s => `<option ${s===lead.status?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </td>
+
           <td class="px-4 py-3 text-center font-black text-blue-700">${calculateScore(lead)}</td>
-          <td class="px-4 py-3"><input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${lead.lastContact || ''}" onchange="updateLead(${lead.id}, 'lastContact', this.value)"></td>
-          <td class="px-4 py-3"><input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${lead.nextFollowUp || ''}" onchange="updateLead(${lead.id}, 'nextFollowUp', this.value)"></td>
-          <td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${lead.notes || ''}" onchange="updateLead(${lead.id}, 'notes', this.value)"></td>
+
+          <td class="px-4 py-3">
+            <input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${lead.lastContact || ''}" onchange="updateLead('${lead.id}', 'lastContact', this.value)">
+          </td>
+
+          <td class="px-4 py-3">
+            <input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${lead.nextFollowUp || ''}" onchange="updateLead('${lead.id}', 'nextFollowUp', this.value)">
+          </td>
+
+          <td class="px-4 py-3">
+            <input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${lead.notes || ''}" onchange="updateLead('${lead.id}', 'notes', this.value)">
+          </td>
         </tr>
       `).join('');
+
       renderMetrics();
       renderHotLeads();
     }
@@ -402,69 +738,195 @@
     function renderHotLeads() {
       const box = document.getElementById('hotLeads');
       if (!box) return;
+
       const hot = [...leads].sort((a,b) => calculateScore(b)-calculateScore(a)).slice(0,10);
-      box.innerHTML = hot.map(l => `<div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between"><div><b>${l.company}</b><div class="text-xs text-slate-500">${l.segment} • ${l.status} • ${l.vendorStatus || 'Not Started'}</div></div><span class="font-black text-blue-700">${calculateScore(l)}</span></div>`).join('');
+
+      box.innerHTML = hot.map(l => `
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between">
+          <div>
+            <b>${l.company || ''}</b>
+            <div class="text-xs text-slate-500">${l.segment || ''} • ${l.status || ''} • ${l.vendorStatus || 'Not Started'}</div>
+          </div>
+          <span class="font-black text-blue-700">${calculateScore(l)}</span>
+        </div>
+      `).join('');
     }
 
-    function updateLead(id, field, value) {
-      leads = leads.map(l => l.id === id ? {...l, [field]: value} : l);
-      saveData();
-      renderLeads();
-    }
-
-    function openModal() { document.getElementById('leadModal').classList.remove('hidden'); document.getElementById('leadModal').classList.add('flex'); }
-    function closeModal() { document.getElementById('leadModal').classList.add('hidden'); document.getElementById('leadModal').classList.remove('flex'); }
-
-    function addLead() {
-      const segment = document.getElementById('newSegment').value;
-      leads.unshift({
-        id: Date.now(), priority: document.getElementById('newPriority').value, company: document.getElementById('newCompany').value,
-        segment, contact: document.getElementById('newContact').value, title: document.getElementById('newTitle').value,
-        phone: document.getElementById('newPhone').value, email: document.getElementById('newEmail').value, city: document.getElementById('newCity').value,
-        status: 'New Lead', vendorStatus: document.getElementById('newVendorStatus').value, lastContact: '', nextFollowUp: document.getElementById('newFollowUp').value, notes: document.getElementById('newNotes').value,
-        portfolioType: segment + ' Portfolio', multipleProperties: true
+    window.updateLead = async function(id, field, value) {
+      await updateDoc(doc(db, "leads", String(id)), {
+        [field]: value,
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser?.email || ""
       });
-      saveData(); closeModal(); renderLeads();
+    };
+
+    window.addLead = async function() {
+      const segment = document.getElementById('newSegment').value;
+
+      await addDoc(collection(db, "leads"), {
+        priority: document.getElementById('newPriority').value,
+        company: document.getElementById('newCompany').value,
+        segment,
+        contact: document.getElementById('newContact').value,
+        title: document.getElementById('newTitle').value,
+        phone: document.getElementById('newPhone').value,
+        email: document.getElementById('newEmail').value,
+        city: document.getElementById('newCity').value,
+        status: 'New Lead',
+        vendorStatus: document.getElementById('newVendorStatus').value,
+        lastContact: '',
+        nextFollowUp: document.getElementById('newFollowUp').value,
+        notes: document.getElementById('newNotes').value,
+        portfolioType: segment + ' Portfolio',
+        multipleProperties: true,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser?.email || ""
+      });
+
+      closeModal();
+    };
+
+    window.addCall = async function() {
+      await addDoc(collection(db, "calls"), {
+        date: callDate.value,
+        company: callCompany.value,
+        contact: callContact.value,
+        outcome: callOutcome.value,
+        followUp: callFollowUp.value,
+        notes: callNotes.value,
+        createdAt: serverTimestamp(),
+        updatedBy: currentUser?.email || ""
+      });
+    };
+
+    function renderCalls() {
+      callsTable.innerHTML = calls.map(c => `
+        <tr>
+          <td class="p-3">${c.date || ''}</td>
+          <td class="p-3 font-bold">${c.company || ''}</td>
+          <td class="p-3">${c.contact || ''}</td>
+          <td class="p-3">${c.outcome || ''}</td>
+          <td class="p-3">${c.followUp || ''}</td>
+          <td class="p-3">${c.notes || ''}</td>
+        </tr>
+      `).join('');
     }
 
-    function addCall() {
-      calls.unshift({date:callDate.value,company:callCompany.value,contact:callContact.value,outcome:callOutcome.value,followUp:callFollowUp.value,notes:callNotes.value});
-      saveData(); renderCalls();
+    window.addWalk = async function() {
+      await addDoc(collection(db, "walks"), {
+        property: walkProperty.value,
+        manager: walkManager.value,
+        date: walkDate.value,
+        type: walkType.value,
+        issue: walkIssue.value,
+        risk: walkRisk.value,
+        proposal: walkProposal.checked ? 'Yes' : 'No',
+        followUp: walkFollowUp.value,
+        createdAt: serverTimestamp(),
+        updatedBy: currentUser?.email || ""
+      });
+    };
+
+    function renderWalks() {
+      walksTable.innerHTML = walks.map(w => `
+        <tr>
+          <td class="p-3 font-bold">${w.property || ''}</td>
+          <td class="p-3">${w.manager || ''}</td>
+          <td class="p-3">${w.date || ''}</td>
+          <td class="p-3">${w.type || ''}</td>
+          <td class="p-3">${w.issue || ''}</td>
+          <td class="p-3 font-bold ${w.risk==='Urgent'?'text-red-700':''}">${w.risk || ''}</td>
+          <td class="p-3">${w.proposal || ''}</td>
+          <td class="p-3">${w.followUp || ''}</td>
+        </tr>
+      `).join('');
     }
-    function renderCalls() { callsTable.innerHTML = calls.map(c => `<tr><td class="p-3">${c.date}</td><td class="p-3 font-bold">${c.company}</td><td class="p-3">${c.contact}</td><td class="p-3">${c.outcome}</td><td class="p-3">${c.followUp}</td><td class="p-3">${c.notes}</td></tr>`).join(''); }
 
-    function addWalk() {
-      walks.unshift({property:walkProperty.value,manager:walkManager.value,date:walkDate.value,type:walkType.value,issue:walkIssue.value,risk:walkRisk.value,proposal:walkProposal.checked?'Yes':'No',followUp:walkFollowUp.value});
-      saveData(); renderWalks();
+    function renderAssociations() {
+      assocTable.innerHTML = associations.map(a => `
+        <tr>
+          <td class="p-3 font-bold">${a.organization || ''}</td>
+          <td class="p-3">${a.event || ''}</td>
+          <td class="p-3">${a.date || ''}</td>
+          <td class="p-3">${a.attending || ''}</td>
+          <td class="p-3">${a.contacts || ''}</td>
+          <td class="p-3">${a.followUp || ''}</td>
+        </tr>
+      `).join('');
     }
-    function renderWalks() { walksTable.innerHTML = walks.map(w => `<tr><td class="p-3 font-bold">${w.property}</td><td class="p-3">${w.manager}</td><td class="p-3">${w.date}</td><td class="p-3">${w.type}</td><td class="p-3">${w.issue}</td><td class="p-3 font-bold ${w.risk==='Urgent'?'text-red-700':''}">${w.risk}</td><td class="p-3">${w.proposal}</td><td class="p-3">${w.followUp}</td></tr>`).join(''); }
 
-    function renderAssociations() { assocTable.innerHTML = associations.map(a => `<tr><td class="p-3 font-bold">${a.organization}</td><td class="p-3">${a.event}</td><td class="p-3">${a.date}</td><td class="p-3">${a.attending}</td><td class="p-3">${a.contacts}</td><td class="p-3">${a.followUp}</td></tr>`).join(''); }
+    window.addProposal = async function() {
+      await addDoc(collection(db, "proposals"), {
+        company: proposalCompany.value,
+        property: proposalProperty.value,
+        amount: Number(proposalAmount.value || 0),
+        date: proposalDate.value,
+        status: proposalStatus.value,
+        followUp: proposalFollowUp.value,
+        createdAt: serverTimestamp(),
+        updatedBy: currentUser?.email || ""
+      });
+    };
 
-    function addProposal() {
-      proposals.unshift({company:proposalCompany.value,property:proposalProperty.value,amount:Number(proposalAmount.value||0),date:proposalDate.value,status:proposalStatus.value,followUp:proposalFollowUp.value});
-      saveData(); renderProposals();
+    function renderProposals() {
+      proposalTable.innerHTML = proposals.map(p => `
+        <tr>
+          <td class="p-3 font-bold">${p.company || ''}</td>
+          <td class="p-3">${p.property || ''}</td>
+          <td class="p-3 font-bold">${Number(p.amount || 0).toLocaleString('en-US',{style:'currency',currency:'USD'})}</td>
+          <td class="p-3">${p.date || ''}</td>
+          <td class="p-3">${p.status || ''}</td>
+          <td class="p-3">${p.followUp || ''}</td>
+        </tr>
+      `).join('');
     }
-    function renderProposals() { proposalTable.innerHTML = proposals.map(p => `<tr><td class="p-3 font-bold">${p.company}</td><td class="p-3">${p.property}</td><td class="p-3 font-bold">${p.amount.toLocaleString('en-US',{style:'currency',currency:'USD'})}</td><td class="p-3">${p.date}</td><td class="p-3">${p.status}</td><td class="p-3">${p.followUp}</td></tr>`).join(''); }
 
-    function exportCSV() {
+    window.exportCSV = function() {
       const headers = ['Priority','Company','Vendor Status','Segment','Contact','Title','Phone','Email','City','Status','Lead Score','Last Contact','Next Follow Up','Notes'];
-      const rows = leads.map(l => [l.priority,l.company,l.vendorStatus || 'Not Started',l.segment,l.contact,l.title,l.phone,l.email,l.city,l.status,calculateScore(l),l.lastContact,l.nextFollowUp,l.notes]);
-      const csv = [headers, ...rows].map(row => row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+
+      const rows = leads.map(l => [
+        l.priority,
+        l.company,
+        l.vendorStatus || 'Not Started',
+        l.segment,
+        l.contact,
+        l.title,
+        l.phone,
+        l.email,
+        l.city,
+        l.status,
+        calculateScore(l),
+        l.lastContact,
+        l.nextFollowUp,
+        l.notes
+      ]);
+
+      const csv = [headers, ...rows]
+        .map(row => row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(','))
+        .join('\n');
+
       const blob = new Blob([csv], {type:'text/csv'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'kke_property_management_leads.csv'; a.click(); URL.revokeObjectURL(url);
-    }
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'kke_property_management_leads.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
 
     document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50');
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.className = 'tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50';
+      });
+
       btn.className = 'tab-btn px-4 py-3 text-sm font-bold border-b-2 border-blue-700 text-blue-700 bg-blue-50';
+
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
       document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
     }));
 
     document.getElementById('searchInput').addEventListener('input', renderLeads);
-    renderLeads(); renderCalls(); renderWalks(); renderAssociations(); renderProposals();
   </script>
 </body>
 </html>
