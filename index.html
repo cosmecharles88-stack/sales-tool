@@ -15,7 +15,8 @@ import {
   Clock,
   ChevronRight,
   MoreVertical,
-  Filter
+  Filter,
+  X
 } from 'lucide-react';
 
 const SEGMENTS = ["Multifamily", "HOA", "Commercial", "Industrial", "Retail", "Senior Living"];
@@ -83,6 +84,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('MASTER LEADS DASHBOARD');
   const [leads, setLeads] = useState(INITIAL_LEADS);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const calculateScore = (lead) => {
     let score = 0;
@@ -132,6 +134,29 @@ export default function App() {
     l.city.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleAddProspect = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const newLead = {
+      id: Date.now(),
+      priority: formData.get('priority'),
+      company: formData.get('company'),
+      segment: formData.get('segment'),
+      contact: '',
+      title: formData.get('title'),
+      phone: formData.get('phone'),
+      email: '',
+      city: formData.get('city'),
+      status: 'Researching',
+      lastContact: null,
+      nextFollowUp: null,
+      notes: formData.get('notes'),
+      multipleProperties: true
+    };
+    setLeads([newLead, ...leads]);
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900">
       {/* Header */}
@@ -156,7 +181,10 @@ export default function App() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold shadow-sm transition-colors">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold shadow-sm transition-colors"
+          >
             <Plus size={18} /> Add Prospect
           </button>
         </div>
@@ -229,7 +257,7 @@ export default function App() {
                         <div className="flex flex-col">
                           <input 
                             className="bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blue-500 focus:outline-none font-semibold text-slate-800 w-full"
-                            placeholder="[Real Name Needed]"
+                            placeholder="[Enter Real Name]"
                             value={lead.contact}
                             onChange={(e) => updateLead(lead.id, 'contact', e.target.value)}
                           />
@@ -247,7 +275,7 @@ export default function App() {
                           {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-4 py-4 text-center">
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-blue-700">{calculateScore(lead)}</span>
                         </div>
@@ -260,15 +288,30 @@ export default function App() {
           </div>
         )}
 
+        {/* Call Tracker Tab */}
         {activeTab === 'CALL TRACKER' && (
           <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm text-center">
             <PhoneCall className="mx-auto text-slate-300 mb-4" size={48} />
             <h2 className="text-xl font-bold mb-2">DFW Call Outreach Queue</h2>
-            <p className="text-slate-500 mb-6">Select a lead from the dashboard to log a verified contact or outcome.</p>
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">Start Call List</button>
+            <p className="text-slate-500 mb-6 max-w-md mx-auto">This interface acts as your guide. Use the regional office phone numbers to reach a gatekeeper and identify the decision-maker for each portfolio.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+              <div className="p-4 border border-slate-100 rounded-lg bg-slate-50">
+                <p className="font-bold text-blue-600">1. Dial Number</p>
+                <p className="text-xs text-slate-500 italic">Call the office phone listed in your dashboard.</p>
+              </div>
+              <div className="p-4 border border-slate-100 rounded-lg bg-slate-50">
+                <p className="font-bold text-blue-600">2. Qualify</p>
+                <p className="text-xs text-slate-500 italic">Ask for the Maintenance or Portfolio Director.</p>
+              </div>
+              <div className="p-4 border border-slate-100 rounded-lg bg-slate-50">
+                <p className="font-bold text-blue-600">3. Update CRM</p>
+                <p className="text-xs text-slate-500 italic">Type the verified name directly into the lead row.</p>
+              </div>
+            </div>
           </div>
         )}
 
+        {/* Automation Tab */}
         {activeTab === 'FOLLOW-UP AUTOMATION' && (
           <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
             <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
@@ -288,9 +331,10 @@ export default function App() {
                   </div>
                 ))}
               </div>
-              <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+              <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-3">
+                <AlertCircle className="text-blue-600 flex-shrink-0" size={20} />
                 <p className="text-sm text-blue-800 leading-relaxed italic">
-                  "Research is your first step. Use the verified office numbers to request the current Maintenance Director or Regional Portfolio Manager for the Dallas market."
+                  "Researching is the vital first stage. Your score will increase automatically as you verify contact details and move prospects into the 'Contacted' or 'Meeting Scheduled' status."
                 </p>
               </div>
             </div>
@@ -298,8 +342,61 @@ export default function App() {
         )}
       </main>
 
+      {/* Add Lead Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold">Add New Prospect</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleAddProspect} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase text-slate-400">Priority</label>
+                  <select name="priority" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50">
+                    <option>High</option>
+                    <option>Medium</option>
+                    <option>Low</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase text-slate-400">Segment</label>
+                  <select name="segment" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50">
+                    {SEGMENTS.map(s => <option key={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase text-slate-400">Company Name</label>
+                <input required name="company" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500" placeholder="e.g. Hines Global" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase text-slate-400">Office Phone</label>
+                  <input name="phone" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 focus:bg-white" placeholder="214-555-0000" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase text-slate-400">City</label>
+                  <input name="city" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 focus:bg-white" placeholder="Dallas" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase text-slate-400">Quick Notes</label>
+                <textarea name="notes" className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50 focus:bg-white" rows="2" placeholder="e.g. Major Uptown asset."></textarea>
+              </div>
+              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors mt-4">
+                Add to Research Queue
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       <footer className="px-6 py-4 border-t border-slate-200 bg-white text-center">
-        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">KKE Concrete & Pavement • Real DFW Office Data v2.0 • Powered by Gemini</p>
+        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest italic">Note: All data entered in this interface is stored locally in your session. Use the 'Preview' button to interact.</p>
       </footer>
     </div>
   );
