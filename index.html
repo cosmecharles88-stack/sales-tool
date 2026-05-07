@@ -208,10 +208,10 @@
            Score
           </th>
           <th class="px-4 py-3 font-black text-slate-600 min-w-40">
-           Last Contact
+           Last Contact Date
           </th>
           <th class="px-4 py-3 font-black text-slate-600 min-w-40">
-           Next Follow Up
+           Next Action Date
           </th>
           <th class="px-4 py-3 font-black text-slate-600 min-w-80">
            Notes
@@ -231,11 +231,11 @@
         Call Tracker
        </h2>
        <p class="text-sm text-slate-500">
-        Log every touchpoint.
+        Log every touchpoint. Call Date is when you called; Next Call Follow-Up is when to reach back out.
        </p>
       </div>
       <div class="p-4 grid grid-cols-1 md:grid-cols-6 gap-3 border-b border-slate-200">
-       <input class="border rounded-xl px-3 py-2 text-sm" id="callDate" type="date"/>
+       <label class="text-xs font-bold text-slate-500 uppercase">Call Date<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="callDate" type="date"/></label>
        <input class="border rounded-xl px-3 py-2 text-sm" id="callCompany" placeholder="Company"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="callContact" placeholder="Contact"/>
        <select class="border rounded-xl px-3 py-2 text-sm" id="callOutcome">
@@ -264,7 +264,7 @@
          Wants Site Visit
         </option>
        </select>
-       <input class="border rounded-xl px-3 py-2 text-sm" id="callFollowUp" type="date"/>
+       <label class="text-xs font-bold text-slate-500 uppercase">Next Call Follow-Up<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="callFollowUp" type="date"/></label>
        <button class="bg-blue-700 text-white rounded-xl font-bold text-sm" onclick="addCall()">
         Add Call
        </button>
@@ -275,7 +275,7 @@
         <thead class="bg-slate-100">
          <tr>
           <th class="p-3 text-left">
-           Date
+           Call Date
           </th>
           <th class="p-3 text-left">
            Company
@@ -287,7 +287,7 @@
            Outcome
           </th>
           <th class="p-3 text-left">
-           Follow Up
+           Next Call Follow-Up
           </th>
           <th class="p-3 text-left">
            Notes
@@ -307,14 +307,14 @@
         Property Walk Tracker
        </h2>
        <p class="text-sm text-slate-500">
-        Track site walks.
+        Track site walks. Property Walk Date is the site visit; Next Action Date is the follow-up after the walk.
        </p>
       </div>
       <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-3 border-b border-slate-200">
        <input class="border rounded-xl px-3 py-2 text-sm" id="walkProperty" placeholder="Property"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="walkAddress" placeholder="Property Address"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="walkManager" placeholder="Manager"/>
-       <input class="border rounded-xl px-3 py-2 text-sm" id="walkDate" type="date"/>
+       <label class="text-xs font-bold text-slate-500 uppercase">Property Walk Date<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="walkDate" type="date"/></label>
        <select class="border rounded-xl px-3 py-2 text-sm" id="walkType">
         <option>
          Multifamily
@@ -385,7 +385,7 @@
        <button class="bg-blue-700 text-white rounded-xl font-bold text-sm" onclick="addWalk()">
         Add Walk
        </button>
-       <input class="border rounded-xl px-3 py-2 text-sm md:col-span-4" id="walkFollowUp" type="date"/>
+       <label class="text-xs font-bold text-slate-500 uppercase md:col-span-4">Next Action Date<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="walkFollowUp" type="date"/></label>
       </div>
       <div class="overflow-x-auto">
        <table class="w-full text-sm">
@@ -401,7 +401,7 @@
            Manager
           </th>
           <th class="p-3 text-left">
-           Date
+           Walk Date
           </th>
           <th class="p-3 text-left">
            Type
@@ -416,7 +416,7 @@
            Proposal
           </th>
           <th class="p-3 text-left">
-           Follow Up
+           Next Action Date
           </th>
           <th class="p-3 text-left">
            Map
@@ -592,10 +592,10 @@
          <tr>
           <th class="p-3 text-left">Organization</th>
           <th class="p-3 text-left">Event</th>
-          <th class="p-3 text-left">Date</th>
+          <th class="p-3 text-left">Event Date</th>
           <th class="p-3 text-left">Attending</th>
           <th class="p-3 text-left">Contacts Made</th>
-          <th class="p-3 text-left">Follow Up</th>
+          <th class="p-3 text-left">Event Follow-Up</th>
          </tr>
         </thead>
         <tbody id="assocTable"></tbody>
@@ -615,7 +615,7 @@
        <input class="border rounded-xl px-3 py-2 text-sm" id="proposalCompany" placeholder="Company"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="proposalProperty" placeholder="Property"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="proposalAmount" placeholder="Amount" type="number"/>
-       <input class="border rounded-xl px-3 py-2 text-sm" id="proposalDate" type="date"/>
+       <label class="text-xs font-bold text-slate-500 uppercase">Proposal Sent Date<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="proposalDate" type="date"/></label>
        <select class="border rounded-xl px-3 py-2 text-sm" id="proposalStatus">
         <option>
          Drafting
@@ -639,7 +639,7 @@
        <button class="bg-blue-700 text-white rounded-xl font-bold text-sm" onclick="addProposal()">
         Add Proposal
        </button>
-       <input class="border rounded-xl px-3 py-2 text-sm md:col-span-6" id="proposalFollowUp" type="date"/>
+       <label class="text-xs font-bold text-slate-500 uppercase md:col-span-6">Review Follow-Up Date<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="proposalFollowUp" type="date"/></label>
       </div>
       <div class="overflow-x-auto">
        <table class="w-full text-sm">
@@ -655,13 +655,13 @@
            Amount
           </th>
           <th class="p-3 text-left">
-           Date Sent
+           Proposal Sent Date
           </th>
           <th class="p-3 text-left">
            Status
           </th>
           <th class="p-3 text-left">
-           Follow Up
+           Review Follow-Up Date
           </th>
           <th class="p-3 text-left">
            PDF
