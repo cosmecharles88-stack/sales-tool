@@ -208,10 +208,10 @@
            Score
           </th>
           <th class="px-4 py-3 font-black text-slate-600 min-w-40">
-           Last Contact Date
+           Last Contact
           </th>
           <th class="px-4 py-3 font-black text-slate-600 min-w-40">
-           Next Action Date
+           Next Follow Up
           </th>
           <th class="px-4 py-3 font-black text-slate-600 min-w-80">
            Notes
@@ -231,11 +231,11 @@
         Call Tracker
        </h2>
        <p class="text-sm text-slate-500">
-        Log every touchpoint. Call Date is when you called; Next Call Follow-Up is when to reach back out.
+        Log every touchpoint.
        </p>
       </div>
       <div class="p-4 grid grid-cols-1 md:grid-cols-6 gap-3 border-b border-slate-200">
-       <label class="text-xs font-bold text-slate-500 uppercase">Call Date<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="callDate" type="date"/></label>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="callDate" type="date"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="callCompany" placeholder="Company"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="callContact" placeholder="Contact"/>
        <select class="border rounded-xl px-3 py-2 text-sm" id="callOutcome">
@@ -264,7 +264,7 @@
          Wants Site Visit
         </option>
        </select>
-       <label class="text-xs font-bold text-slate-500 uppercase">Next Call Follow-Up<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="callFollowUp" type="date"/></label>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="callFollowUp" type="date"/>
        <button class="bg-blue-700 text-white rounded-xl font-bold text-sm" onclick="addCall()">
         Add Call
        </button>
@@ -275,7 +275,7 @@
         <thead class="bg-slate-100">
          <tr>
           <th class="p-3 text-left">
-           Call Date
+           Date
           </th>
           <th class="p-3 text-left">
            Company
@@ -287,7 +287,7 @@
            Outcome
           </th>
           <th class="p-3 text-left">
-           Next Call Follow-Up
+           Follow Up
           </th>
           <th class="p-3 text-left">
            Notes
@@ -307,14 +307,14 @@
         Property Walk Tracker
        </h2>
        <p class="text-sm text-slate-500">
-        Track site walks. Property Walk Date is the site visit; Next Action Date is the follow-up after the walk.
+        Track site walks.
        </p>
       </div>
       <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-3 border-b border-slate-200">
        <input class="border rounded-xl px-3 py-2 text-sm" id="walkProperty" placeholder="Property"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="walkAddress" placeholder="Property Address"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="walkManager" placeholder="Manager"/>
-       <label class="text-xs font-bold text-slate-500 uppercase">Property Walk Date<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="walkDate" type="date"/></label>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="walkDate" type="date"/>
        <select class="border rounded-xl px-3 py-2 text-sm" id="walkType">
         <option>
          Multifamily
@@ -385,7 +385,7 @@
        <button class="bg-blue-700 text-white rounded-xl font-bold text-sm" onclick="addWalk()">
         Add Walk
        </button>
-       <label class="text-xs font-bold text-slate-500 uppercase md:col-span-4">Next Action Date<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="walkFollowUp" type="date"/></label>
+       <input class="border rounded-xl px-3 py-2 text-sm md:col-span-4" id="walkFollowUp" type="date"/>
       </div>
       <div class="overflow-x-auto">
        <table class="w-full text-sm">
@@ -401,7 +401,7 @@
            Manager
           </th>
           <th class="p-3 text-left">
-           Walk Date
+           Date
           </th>
           <th class="p-3 text-left">
            Type
@@ -416,7 +416,7 @@
            Proposal
           </th>
           <th class="p-3 text-left">
-           Next Action Date
+           Follow Up
           </th>
           <th class="p-3 text-left">
            Map
@@ -580,12 +580,19 @@
     ============================================================ -->
     <section class="tab-panel hidden" id="tab-associations">
      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-      <h2 class="font-black text-lg mb-4">
-       Association Networking
-      </h2>
-      <p class="text-sm text-slate-500 mb-4">
-       Track property management associations, networking events, contacts made, and follow-up actions.
-      </p>
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
+       <div>
+        <h2 class="font-black text-lg">
+         Association Networking
+        </h2>
+        <p class="text-sm text-slate-500">
+         Seeded with North Texas events where property managers, facility managers, infrastructure buyers, GCs, and procurement contacts are likely to be present.
+        </p>
+       </div>
+       <button class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm" id="seedAssocBtn">
+        Seed Recommended Events
+       </button>
+      </div>
       <div class="overflow-x-auto">
        <table class="w-full text-sm">
         <thead class="bg-slate-100">
@@ -593,9 +600,13 @@
           <th class="p-3 text-left">Organization</th>
           <th class="p-3 text-left">Event</th>
           <th class="p-3 text-left">Event Date</th>
+          <th class="p-3 text-left">Location</th>
+          <th class="p-3 text-left">Target Audience</th>
+          <th class="p-3 text-left">Why KKE Should Care</th>
           <th class="p-3 text-left">Attending</th>
           <th class="p-3 text-left">Contacts Made</th>
           <th class="p-3 text-left">Event Follow-Up</th>
+          <th class="p-3 text-left">Link</th>
          </tr>
         </thead>
         <tbody id="assocTable"></tbody>
@@ -615,7 +626,7 @@
        <input class="border rounded-xl px-3 py-2 text-sm" id="proposalCompany" placeholder="Company"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="proposalProperty" placeholder="Property"/>
        <input class="border rounded-xl px-3 py-2 text-sm" id="proposalAmount" placeholder="Amount" type="number"/>
-       <label class="text-xs font-bold text-slate-500 uppercase">Proposal Sent Date<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="proposalDate" type="date"/></label>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="proposalDate" type="date"/>
        <select class="border rounded-xl px-3 py-2 text-sm" id="proposalStatus">
         <option>
          Drafting
@@ -639,7 +650,7 @@
        <button class="bg-blue-700 text-white rounded-xl font-bold text-sm" onclick="addProposal()">
         Add Proposal
        </button>
-       <label class="text-xs font-bold text-slate-500 uppercase md:col-span-6">Review Follow-Up Date<input class="mt-1 w-full border rounded-xl px-3 py-2 text-sm" id="proposalFollowUp" type="date"/></label>
+       <input class="border rounded-xl px-3 py-2 text-sm md:col-span-6" id="proposalFollowUp" type="date"/>
       </div>
       <div class="overflow-x-auto">
        <table class="w-full text-sm">
@@ -655,13 +666,13 @@
            Amount
           </th>
           <th class="p-3 text-left">
-           Proposal Sent Date
+           Date Sent
           </th>
           <th class="p-3 text-left">
            Status
           </th>
           <th class="p-3 text-left">
-           Review Follow-Up Date
+           Follow Up
           </th>
           <th class="p-3 text-left">
            PDF
@@ -1596,6 +1607,177 @@ const defaultLeads = [{
   multipleProperties: true
 }];
 
+const recommendedAssociationEvents = [
+  {
+    "id": "event-aagd-tradeshow-2026",
+    "organization": "Apartment Association of Greater Dallas (AAGD)",
+    "event": "AAGD 2026 Trade Show",
+    "date": "2026-05-14",
+    "location": "Dallas Market Hall, 2200 N Stemmons Fwy, Dallas, TX 75207",
+    "audience": "Multifamily owners, property management companies, on-site managers, suppliers",
+    "whyKke": "Largest DFW multifamily trade show; good place to meet maintenance/property managers and regional operators.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-05-15",
+    "url": "https://www.aagdallas.com/tradeshow",
+    "notes": "May 14, 2026, 3:00 PM\u20137:00 PM."
+  },
+  {
+    "id": "event-cmbl-dfw-2026",
+    "organization": "Texas Comptroller / CMBL",
+    "event": "DFW Doing Business with the State of Texas / CMBL",
+    "date": "2026-05-14",
+    "location": "Norris Conference Center, Dallas, TX",
+    "audience": "State procurement contacts, public buyers, vendors seeking CMBL opportunities",
+    "whyKke": "Directly relevant to KKE\u2019s public-sector/vendor strategy and CMBL positioning.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-05-15",
+    "url": "https://www.eventbrite.com/e/dfw-doing-business-w-the-state-of-texas-centralized-master-bidders-list-tickets-1985665155934",
+    "notes": "Event listing indicates May 14, 2026 starting at 4:00 PM."
+  },
+  {
+    "id": "event-boma-tradeshow-2026",
+    "organization": "BOMA Greater Dallas",
+    "event": "BOMA Dallas 2026 Trade Show",
+    "date": "2026-05-21",
+    "location": "Dallas, TX",
+    "audience": "Commercial real estate professionals, property managers, building operations teams",
+    "whyKke": "Strong commercial property management networking event for office, facility, and building manager contacts.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-05-22",
+    "url": "https://www.bomadallas.org/events/tradeshow/",
+    "notes": "BOMA Dallas lists the trade show on May 21, 2026 from 3:00 PM\u20137:00 PM."
+  },
+  {
+    "id": "event-dfw-cai-highrise-2026",
+    "organization": "DFW Community Associations Institute (CAI)",
+    "event": "2026 High-Rise & Condominium Managers Forum",
+    "date": "2026-05-29",
+    "location": "Dallas-Fort Worth, TX",
+    "audience": "HOA managers, condominium managers, community association leaders",
+    "whyKke": "Good fit for HOA and condominium trip hazard, sidewalk, pool deck, and parking lot repair opportunities.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-06-01",
+    "url": "https://www.dfwcai.org/",
+    "notes": "DFW CAI upcoming chapter event for managers in high-rise and condominium communities."
+  },
+  {
+    "id": "event-irem-luncheon-2026",
+    "organization": "IREM Dallas",
+    "event": "June Educational Luncheon / 23Springs Building Tour",
+    "date": "2026-06-18",
+    "location": "23Springs, 2323 Cedar Springs Road, Dallas, TX 75201",
+    "audience": "Real estate managers, property managers, industry partners",
+    "whyKke": "IREM Dallas is a strong real estate management network; building tours create useful property/facility conversations.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-06-19",
+    "url": "https://iremdallas.org/meetinginfo.php?id=249&ts=1776789317",
+    "notes": "IREM Dallas lists June 18, 2026; RSVP by June 12."
+  },
+  {
+    "id": "event-cmbl-webinar-2026",
+    "organization": "Texas Comptroller / CMBL",
+    "event": "Advantages of Being Registered on the CMBL: How to Modify/Maintain Your Profile",
+    "date": "2026-06-24",
+    "location": "Online webinar",
+    "audience": "Vendors seeking state agency, university, and government contracting opportunities",
+    "whyKke": "Helps keep KKE\u2019s CMBL profile strong for public-sector opportunities.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-06-25",
+    "url": "https://comptroller.texas.gov/purchasing/vendor/cmbl/cmbl-webinar.php",
+    "notes": "Texas Comptroller lists the webinar for June 24, 2026, 10:00\u201311:00 AM CT."
+  },
+  {
+    "id": "event-build-fw-2026",
+    "organization": "Fort Worth Hispanic Chamber / Regional Hispanic Contractors Association",
+    "event": "Build Fort Worth 2026 Construction Expo",
+    "date": "2026-08-06",
+    "location": "Will Rogers Memorial Center, Fort Worth, TX",
+    "audience": "Contractors, suppliers, developers, public agencies, industry leaders",
+    "whyKke": "Excellent GC/infrastructure/business development event with public and private project visibility.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-08-07",
+    "url": "https://buildfw.org/",
+    "notes": "Build Fort Worth lists August 6, 2026 and promotes 1,200+ attendees and 140+ vendors."
+  },
+  {
+    "id": "event-irem-fashion-2026",
+    "organization": "IREM Dallas",
+    "event": "IREM Dallas Fashion Show 2026",
+    "date": "2026-08-27",
+    "location": "TBD",
+    "audience": "IREM Dallas members, real estate managers, industry partners",
+    "whyKke": "Networking event for building relationships with real estate/property management professionals.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-08-28",
+    "url": "https://iremdallas.org/Fashion_Show",
+    "notes": "IREM Dallas lists August 27, 2026, 5:30 PM\u20139:30 PM."
+  },
+  {
+    "id": "event-aagd-business-exchange-2026",
+    "organization": "Apartment Association of Greater Dallas (AAGD)",
+    "event": "2026 Business Exchange",
+    "date": "2026-09-03",
+    "location": "Dallas-Fort Worth, TX",
+    "audience": "Multifamily decision-makers and suppliers in a reverse-trade-show format",
+    "whyKke": "High-value multifamily event because suppliers typically meet decision-makers more directly than at a normal trade show.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-09-04",
+    "url": "https://www.aagdallas.com/business-exchange",
+    "notes": "AAGD lists September 3, 2026, 8:00 AM\u201312:00 PM."
+  },
+  {
+    "id": "event-facilities-expo-2026",
+    "organization": "North Texas Facilities Expo",
+    "event": "North Texas Facilities Expo 2026",
+    "date": "2026-10-14",
+    "location": "Irving Convention Center, Irving, TX",
+    "audience": "Facility managers, maintenance managers, energy managers, government, healthcare, manufacturing, education, utilities",
+    "whyKke": "Strong fit for facility/maintenance decision-makers who handle sidewalks, parking lots, slabs, voids, and trip hazards.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-10-16",
+    "url": "https://www.facilitiesexpo.com/",
+    "notes": "North Texas Facilities Expo is listed for October 14\u201315, 2026 in Irving."
+  },
+  {
+    "id": "event-irem-golf-2026",
+    "organization": "IREM Dallas",
+    "event": "30th Annual IREM Dallas Golf Tournament",
+    "date": "2026-10-19",
+    "location": "Bear Creek Golf Club, 3500 Bear Creek Ct, Dallas, TX 75261",
+    "audience": "IREM real estate managers and industry partners",
+    "whyKke": "Relationship-building opportunity with commercial and multifamily real estate managers.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-10-20",
+    "url": "https://iremdallas.org/meet-reg1.php?id=50",
+    "notes": "IREM Dallas lists October 19, 2026, 8:00 AM\u20133:00 PM."
+  },
+  {
+    "id": "event-aia-texo-conundrum-2026",
+    "organization": "AIA Dallas / TEXO",
+    "event": "Construction Conundrum: What's in the Mix for '26?",
+    "date": "2026-11-18",
+    "location": "TEXO Dallas Conference Center, 11111 N Stemmons Fwy, Dallas, TX 75229",
+    "audience": "Architects, construction leaders, GCs, real estate and construction professionals",
+    "whyKke": "Good GC and construction-market networking event with industry outlook content.",
+    "attending": "Research",
+    "contacts": "",
+    "followUp": "2026-11-19",
+    "url": "https://www.aiadallas.org/event/aia-texo-construction-conundrum-whats-in-the-mix-for-26/",
+    "notes": "AIA Dallas lists November 18, 2026, 11:30 AM\u20131:30 PM."
+  }
+];
+
 // ------------------------------------------------------------
 // Runtime application state
 // These arrays are filled by Firestore real-time listeners.
@@ -1700,13 +1882,10 @@ function startFirestore() {
     }));
 
     if (associations.length === 0) {
-      associations = [
-        { organization: "BOMA Dallas", event: "", date: "", attending: "", contacts: "", followUp: "" },
-        { organization: "CAI Texas", event: "", date: "", attending: "", contacts: "", followUp: "" },
-        { organization: "Apartment Association of Greater Dallas", event: "", date: "", attending: "", contacts: "", followUp: "" },
-        { organization: "IREM", event: "", date: "", attending: "", contacts: "", followUp: "" },
-        { organization: "Vendor Expos", event: "", date: "", attending: "", contacts: "", followUp: "" }
-      ];
+      associations = recommendedAssociationEvents;
+      if (typeof seedAssocBtn !== "undefined") seedAssocBtn.classList.remove("hidden");
+    } else {
+      if (typeof seedAssocBtn !== "undefined") seedAssocBtn.classList.add("hidden");
     }
 
     renderAssociations();
@@ -1725,6 +1904,32 @@ seedBtn.addEventListener('click', async () => {
   }));
   await batch.commit();
   alert("Default leads added.");
+});
+
+
+// ------------------------------------------------------------
+// Recommended association/networking event seeding
+// Writes the recommended event list to Firestore so the team sees it.
+// ------------------------------------------------------------
+seedAssocBtn?.addEventListener('click', async () => {
+  const existing = await getDocs(collection(db, "associations"));
+  if (!existing.empty) {
+    alert("Association events already exist. Seed cancelled to avoid duplicates.");
+    return;
+  }
+
+  const batch = writeBatch(db);
+  recommendedAssociationEvents.forEach(eventItem => {
+    batch.set(doc(db, "associations", eventItem.id), {
+      ...eventItem,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      updatedBy: currentUser?.email || ""
+    });
+  });
+
+  await batch.commit();
+  alert("Recommended association events added.");
 });
 
 // ------------------------------------------------------------
@@ -1868,6 +2073,31 @@ function mapUrl(address, property) {
 function renderWalks() {
   walksTable.innerHTML = walks.map(w => `<tr><td class="p-3 font-bold">${w.property||''}</td><td class="p-3">${w.address||''}</td><td class="p-3">${w.manager||''}</td><td class="p-3">${w.date||''}</td><td class="p-3">${w.type||''}</td><td class="p-3">${w.issue||''}</td><td class="p-3 font-bold ${w.risk==='Urgent'?'text-red-700':''}">${w.risk||''}</td><td class="p-3">${w.proposal||''}</td><td class="p-3">${w.followUp||''}</td><td class="p-3"><a class="text-blue-700 font-bold underline" target="_blank" href="${mapUrl(w.address,w.property)}">Open Map</a></td></tr>`).join('');
 }
+
+function eventCalendarUrl(a) {
+  const compact = (a.date || "").replaceAll("-", "");
+  if (!compact) return "#";
+
+  const details = encodeURIComponent([
+    `Organization: ${a.organization || ""}`,
+    `Event: ${a.event || ""}`,
+    `Target Audience: ${a.audience || ""}`,
+    `Why KKE Should Care: ${a.whyKke || ""}`,
+    `Follow Up: ${a.followUp || ""}`,
+    `Notes: ${a.notes || ""}`,
+    `Link: ${a.url || ""}`
+  ].join("\n"));
+
+  const title = encodeURIComponent(`KKE Networking: ${a.event || a.organization || "Event"}`);
+  const location = encodeURIComponent(a.location || "");
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${compact}/${compact}&details=${details}&location=${location}`;
+}
+
+function eventLink(url, label) {
+  if (!url) return `<span class="text-xs text-slate-400 font-bold">No link</span>`;
+  return `<a class="text-blue-700 font-bold underline" target="_blank" href="${url}">${label}</a>`;
+}
+
 // ------------------------------------------------------------
 // Association Networking rendering
 // Read-only table of networking targets and follow-ups.
@@ -1877,10 +2107,18 @@ function renderAssociations() {
     <tr>
       <td class="p-3 font-bold">${a.organization || ''}</td>
       <td class="p-3">${a.event || ''}</td>
-      <td class="p-3">${a.date || ''}</td>
+      <td class="p-3 whitespace-nowrap">${a.date || ''}</td>
+      <td class="p-3 min-w-64">${a.location || ''}</td>
+      <td class="p-3 min-w-64">${a.audience || ''}</td>
+      <td class="p-3 min-w-72">${a.whyKke || a.notes || ''}</td>
       <td class="p-3">${a.attending || ''}</td>
       <td class="p-3">${a.contacts || ''}</td>
-      <td class="p-3">${a.followUp || ''}</td>
+      <td class="p-3 whitespace-nowrap">${a.followUp || ''}</td>
+      <td class="p-3 whitespace-nowrap">
+        ${eventLink(a.url, 'Event')}
+        <span class="text-slate-300 mx-1">|</span>
+        ${eventLink(eventCalendarUrl(a), 'Calendar')}
+      </td>
     </tr>
   `).join('');
 }
