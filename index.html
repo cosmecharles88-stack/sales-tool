@@ -1,932 +1,2009 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KKE Sales Command Center</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   KKE Sales Command Center
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    body { font-family: 'Inter', sans-serif; }
+   body { font-family: 'Inter', sans-serif; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .modal-bg { background: rgba(15, 23, 42, 0.65); }
   </style>
-</head>
-
-<body class="bg-slate-50 text-slate-900">
-
-  <!-- LOGIN SCREEN -->
-  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-slate-100">
-    <div class="bg-white w-full max-w-md rounded-3xl shadow-xl border border-slate-200 p-8">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="bg-blue-700 p-3 rounded-xl shadow-sm">
-          <span class="text-white font-black text-xl">KKE</span>
-        </div>
-        <div>
-          <h1 class="text-2xl font-black tracking-tight">Sales Command Center</h1>
-          <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Secure Team Login</p>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <input id="loginEmail" type="email" placeholder="Email" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
-        <input id="loginPassword" type="password" placeholder="Password" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
-        <button id="loginBtn" class="w-full bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-xl font-black">Log In</button>
-        <p id="loginError" class="hidden text-sm font-bold text-red-700 bg-red-50 border border-red-100 rounded-xl p-3"></p>
-      </div>
-
-      <p class="text-xs text-slate-500 mt-6 leading-relaxed">
-        This version syncs CRM data through Firebase Firestore. Any approved user who logs in will see shared lead updates.
+ </head>
+ <body class="bg-slate-50 text-slate-900">
+  <div class="min-h-screen flex items-center justify-center p-4 bg-slate-100" id="loginScreen">
+   <div class="bg-white w-full max-w-md rounded-3xl shadow-xl border border-slate-200 p-8">
+    <div class="flex items-center gap-3 mb-6">
+     <div class="bg-blue-700 p-3 rounded-xl shadow-sm">
+      <span class="text-white font-black text-xl">
+       KKE
+      </span>
+     </div>
+     <div>
+      <h1 class="text-2xl font-black tracking-tight">
+       Sales Command Center
+      </h1>
+      <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">
+       Secure Team Login
       </p>
+     </div>
     </div>
+    <div class="space-y-3">
+     <input class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" id="loginEmail" placeholder="Email" type="email"/>
+     <input class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" id="loginPassword" placeholder="Password" type="password"/>
+     <button class="w-full bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-xl font-black" id="loginBtn">
+      Log In
+     </button>
+     <p class="hidden text-sm font-bold text-red-700 bg-red-50 border border-red-100 rounded-xl p-3" id="loginError">
+     </p>
+    </div>
+    <p class="text-xs text-slate-500 mt-6 leading-relaxed">
+     This version syncs CRM data through Firebase Firestore. Approved users see shared lead updates.
+    </p>
+   </div>
   </div>
-
-  <!-- APP SCREEN -->
-  <div id="appScreen" class="hidden min-h-screen flex flex-col">
-    <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 sticky top-0 z-30">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <div class="bg-blue-700 p-2 rounded-xl shadow-sm">
-            <span class="text-white font-black text-lg">KKE</span>
-          </div>
-          <div>
-            <h1 class="text-xl md:text-2xl font-black tracking-tight">KKE Sales Command Center</h1>
-            <p id="userStatus" class="text-xs text-slate-500 font-bold uppercase tracking-wider">North Texas Property Management Pipeline</p>
-          </div>
+  <!-- ============================================================
+       MAIN APPLICATION SHELL
+       All CRM modules render after successful login.
+  ============================================================ -->
+  <div class="hidden min-h-screen flex flex-col" id="appScreen">
+   <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 sticky top-0 z-30">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+     <div class="flex items-center gap-3">
+      <div class="bg-blue-700 p-2 rounded-xl shadow-sm">
+       <span class="text-white font-black text-lg">
+        KKE
+       </span>
+      </div>
+      <div>
+       <h1 class="text-xl md:text-2xl font-black tracking-tight">
+        KKE Sales Command Center
+       </h1>
+       <p class="text-xs text-slate-500 font-bold uppercase tracking-wider" id="userStatus">
+        North Texas Property Management Pipeline
+       </p>
+      </div>
+     </div>
+     <div class="flex flex-col sm:flex-row gap-3">
+      <input class="w-full sm:w-80 px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm" id="searchInput" placeholder="Search company, vendor status, city, segment..." type="text"/>
+      <button class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm" onclick="openModal()">
+       + Add Prospect
+      </button>
+      <button class="hidden bg-green-700 hover:bg-green-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm" id="seedBtn">
+       Seed Default Leads
+      </button>
+      <button class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm" id="logoutBtn">
+       Logout
+      </button>
+     </div>
+    </div>
+   </header>
+   <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-4 md:p-6">
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+     <p class="text-xs font-bold text-slate-500 uppercase">
+      Target Leads
+     </p>
+     <p class="text-2xl font-black" id="metricTotal">
+      0
+     </p>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+     <p class="text-xs font-bold text-slate-500 uppercase">
+      Need Research
+     </p>
+     <p class="text-2xl font-black text-purple-700" id="metricResearch">
+      0
+     </p>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+     <p class="text-xs font-bold text-slate-500 uppercase">
+      Meetings
+     </p>
+     <p class="text-2xl font-black text-orange-600" id="metricMeetings">
+      0
+     </p>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+     <p class="text-xs font-bold text-slate-500 uppercase">
+      Property Walks
+     </p>
+     <p class="text-2xl font-black text-blue-700" id="metricWalks">
+      0
+     </p>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+     <p class="text-xs font-bold text-slate-500 uppercase">
+      Closed Won
+     </p>
+     <p class="text-2xl font-black text-green-700" id="metricWon">
+      0
+     </p>
+    </div>
+   </section>
+   <nav class="px-4 md:px-6 flex gap-1 border-b border-slate-200 bg-white overflow-x-auto no-scrollbar">
+    <button class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-blue-700 text-blue-700 bg-blue-50" data-tab="leads">
+     Master Leads Dashboard
+    </button>
+    <button class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50" data-tab="calls">
+     Call Tracker
+    </button>
+    <button class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50" data-tab="walks">
+     Property Walk Tracker
+    </button>
+    <button class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50" data-tab="followups">
+     Follow-Up Automation
+    </button>
+    <button class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50" data-tab="kpis">
+     Weekly KPI Dashboard
+    </button>
+    <button class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50" data-tab="audit">
+     Audit Trail
+    </button>
+    <button class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50" data-tab="associations">
+     Associations
+    </button>
+    <button class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50" data-tab="proposals">
+     Proposal Tracker
+    </button>
+   </nav>
+   <main class="flex-1 p-4 md:p-6">
+    <section class="tab-panel" id="tab-leads">
+     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+       <div>
+        <h2 class="font-black text-lg">
+         Master Leads Dashboard
+        </h2>
+        <p class="text-sm text-slate-500">
+         Live cloud-synced lead data.
+        </p>
+       </div>
+       <button class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold" onclick="exportCSV()">
+        Export CSV
+       </button>
+      </div>
+      <div class="overflow-x-auto">
+       <table class="w-full text-left text-sm">
+        <thead class="bg-slate-100 border-b border-slate-200">
+         <tr>
+          <th class="px-4 py-3 font-black text-slate-600">
+           Priority
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600 min-w-64">
+           Company
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600 min-w-64">
+           Vendor Status
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600">
+           Segment
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600 min-w-56">
+           Contact
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600 min-w-56">
+           Title
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600">
+           Phone
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600 min-w-56">
+           Email
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600">
+           City
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600 min-w-52">
+           Status
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600">
+           Score
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600 min-w-40">
+           Last Contact
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600 min-w-40">
+           Next Follow Up
+          </th>
+          <th class="px-4 py-3 font-black text-slate-600 min-w-80">
+           Notes
+          </th>
+         </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100" id="leadsTable">
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </section>
+    <section class="tab-panel hidden" id="tab-calls">
+     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div class="p-4 border-b border-slate-200">
+       <h2 class="font-black text-lg">
+        Call Tracker
+       </h2>
+       <p class="text-sm text-slate-500">
+        Log every touchpoint.
+       </p>
+      </div>
+      <div class="p-4 grid grid-cols-1 md:grid-cols-6 gap-3 border-b border-slate-200">
+       <input class="border rounded-xl px-3 py-2 text-sm" id="callDate" type="date"/>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="callCompany" placeholder="Company"/>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="callContact" placeholder="Contact"/>
+       <select class="border rounded-xl px-3 py-2 text-sm" id="callOutcome">
+        <option>
+         No Answer
+        </option>
+        <option>
+         Gatekeeper
+        </option>
+        <option>
+         Left Voicemail
+        </option>
+        <option>
+         Interested
+        </option>
+        <option>
+         Not Interested
+        </option>
+        <option>
+         Needs Follow Up
+        </option>
+        <option>
+         Wants Proposal
+        </option>
+        <option>
+         Wants Site Visit
+        </option>
+       </select>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="callFollowUp" type="date"/>
+       <button class="bg-blue-700 text-white rounded-xl font-bold text-sm" onclick="addCall()">
+        Add Call
+       </button>
+       <textarea class="md:col-span-6 border rounded-xl px-3 py-2 text-sm" id="callNotes" placeholder="Notes"></textarea>
+      </div>
+      <div class="overflow-x-auto">
+       <table class="w-full text-sm">
+        <thead class="bg-slate-100">
+         <tr>
+          <th class="p-3 text-left">
+           Date
+          </th>
+          <th class="p-3 text-left">
+           Company
+          </th>
+          <th class="p-3 text-left">
+           Contact
+          </th>
+          <th class="p-3 text-left">
+           Outcome
+          </th>
+          <th class="p-3 text-left">
+           Follow Up
+          </th>
+          <th class="p-3 text-left">
+           Notes
+          </th>
+         </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100" id="callsTable">
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </section>
+    <section class="tab-panel hidden" id="tab-walks">
+     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div class="p-4 border-b border-slate-200">
+       <h2 class="font-black text-lg">
+        Property Walk Tracker
+       </h2>
+       <p class="text-sm text-slate-500">
+        Track site walks.
+       </p>
+      </div>
+      <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-3 border-b border-slate-200">
+       <input class="border rounded-xl px-3 py-2 text-sm" id="walkProperty" placeholder="Property"/>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="walkAddress" placeholder="Property Address"/>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="walkManager" placeholder="Manager"/>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="walkDate" type="date"/>
+       <select class="border rounded-xl px-3 py-2 text-sm" id="walkType">
+        <option>
+         Multifamily
+        </option>
+        <option>
+         HOA
+        </option>
+        <option>
+         Commercial
+        </option>
+        <option>
+         Retail
+        </option>
+        <option>
+         Industrial
+        </option>
+        <option>
+         Senior Living
+        </option>
+       </select>
+       <select class="border rounded-xl px-3 py-2 text-sm" id="walkIssue">
+        <option>
+         Sidewalk Settlement
+        </option>
+        <option>
+         ADA Trip Hazard
+        </option>
+        <option>
+         Pool Deck
+        </option>
+        <option>
+         Dumpster Pad
+        </option>
+        <option>
+         Parking Lot Settlement
+        </option>
+        <option>
+         Void Filling
+        </option>
+        <option>
+         Curb/Gutter
+        </option>
+        <option>
+         Loading Dock
+        </option>
+        <option>
+         Entryway Settlement
+        </option>
+       </select>
+       <select class="border rounded-xl px-3 py-2 text-sm" id="walkRisk">
+        <option>
+         Low
+        </option>
+        <option>
+         Medium
+        </option>
+        <option>
+         High
+        </option>
+        <option>
+         Urgent
+        </option>
+       </select>
+       <label class="flex items-center gap-2 text-sm font-bold">
+        <input id="walkProposal" type="checkbox"/>
+        Proposal Needed
+       </label>
+       <button class="bg-blue-700 text-white rounded-xl font-bold text-sm" onclick="addWalk()">
+        Add Walk
+       </button>
+       <input class="border rounded-xl px-3 py-2 text-sm md:col-span-4" id="walkFollowUp" type="date"/>
+      </div>
+      <div class="overflow-x-auto">
+       <table class="w-full text-sm">
+        <thead class="bg-slate-100">
+         <tr>
+          <th class="p-3 text-left">
+           Property
+          </th>
+          <th class="p-3 text-left">
+           Address
+          </th>
+          <th class="p-3 text-left">
+           Manager
+          </th>
+          <th class="p-3 text-left">
+           Date
+          </th>
+          <th class="p-3 text-left">
+           Type
+          </th>
+          <th class="p-3 text-left">
+           Issues
+          </th>
+          <th class="p-3 text-left">
+           Risk
+          </th>
+          <th class="p-3 text-left">
+           Proposal
+          </th>
+          <th class="p-3 text-left">
+           Follow Up
+          </th>
+          <th class="p-3 text-left">
+           Map
+          </th>
+         </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100" id="walksTable">
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </section>
+    <section class="tab-panel hidden" id="tab-followups">
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+       <h2 class="font-black text-lg mb-4">
+        Lead Scoring Criteria
+       </h2>
+       <div class="space-y-3">
+        <div class="flex justify-between p-3 bg-slate-50 rounded-xl">
+         <span>
+          Multifamily Portfolio
+         </span>
+         <b class="text-blue-700">
+          +10
+         </b>
         </div>
-
-        <div class="flex flex-col sm:flex-row gap-3">
-          <input id="searchInput" type="text" placeholder="Search company, vendor status, city, segment..." class="w-full sm:w-80 pl-4 pr-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm" />
-          <button onclick="openModal()" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm">+ Add Prospect</button>
-          <button id="seedBtn" class="hidden bg-green-700 hover:bg-green-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm">Seed Default Leads</button>
-          <button id="logoutBtn" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm">Logout</button>
+        <div class="flex justify-between p-3 bg-slate-50 rounded-xl">
+         <span>
+          Commercial Portfolio
+         </span>
+         <b class="text-blue-700">
+          +8
+         </b>
         </div>
+        <div class="flex justify-between p-3 bg-slate-50 rounded-xl">
+         <span>
+          HOA Portfolio
+         </span>
+         <b class="text-blue-700">
+          +7
+         </b>
+        </div>
+        <div class="flex justify-between p-3 bg-slate-50 rounded-xl">
+         <span>
+          Multiple DFW Properties
+         </span>
+         <b class="text-blue-700">
+          +10
+         </b>
+        </div>
+        <div class="flex justify-between p-3 bg-slate-50 rounded-xl">
+         <span>
+          Meeting Scheduled
+         </span>
+         <b class="text-blue-700">
+          +20
+         </b>
+        </div>
+        <div class="flex justify-between p-3 bg-slate-50 rounded-xl">
+         <span>
+          Proposal Sent
+         </span>
+         <b class="text-blue-700">
+          +25
+         </b>
+        </div>
+        <div class="flex justify-between p-3 bg-slate-50 rounded-xl">
+         <span>
+          Property Walk Scheduled
+         </span>
+         <b class="text-blue-700">
+          +30
+         </b>
+        </div>
+       </div>
       </div>
-    </header>
-
-    <!-- METRICS -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 p-4 md:p-6">
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <p class="text-xs font-bold text-slate-500 uppercase">Target Leads</p>
-        <p id="metricTotal" class="text-2xl font-black text-slate-900">0</p>
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+       <h2 class="font-black text-lg mb-4">
+        Hot Leads
+       </h2>
+       <div class="space-y-3" id="hotLeads">
+       </div>
       </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <p class="text-xs font-bold text-slate-500 uppercase">Need Research</p>
-        <p id="metricResearch" class="text-2xl font-black text-purple-700">0</p>
+     </div>
+    </section>
+    <section class="tab-panel hidden" id="tab-kpis">
+     <div class="space-y-6">
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+       <h2 class="font-black text-xl mb-1">
+        Weekly Sales Meeting Dashboard
+       </h2>
+       <p class="text-sm text-slate-500 mb-4">
+        Use this for your weekly property management pipeline review.
+       </p>
+       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="weeklyKpiCards">
+       </div>
       </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <p class="text-xs font-bold text-slate-500 uppercase">Meetings</p>
-        <p id="metricMeetings" class="text-2xl font-black text-orange-600">0</p>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+       <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <h3 class="font-black text-lg mb-4">
+         Follow-Ups Due
+        </h3>
+        <div class="space-y-3" id="followUpQueue">
+        </div>
+       </div>
+       <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <h3 class="font-black text-lg mb-4">
+         Vendor Onboarding Pipeline
+        </h3>
+        <div class="space-y-3" id="vendorKpiBreakdown">
+        </div>
+       </div>
       </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <p class="text-xs font-bold text-slate-500 uppercase">Property Walks</p>
-        <p id="metricWalks" class="text-2xl font-black text-blue-700">0</p>
+     </div>
+    </section>
+    <section class="tab-panel hidden" id="tab-audit">
+     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div class="p-4 border-b border-slate-200">
+       <h2 class="font-black text-lg">
+        Audit Trail
+       </h2>
+       <p class="text-sm text-slate-500">
+        Tracks who changed what, when they changed it, and the old/new values.
+       </p>
       </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-        <p class="text-xs font-bold text-slate-500 uppercase">Closed Won</p>
-        <p id="metricWon" class="text-2xl font-black text-green-700">0</p>
+      <div class="overflow-x-auto">
+       <table class="w-full text-sm">
+        <thead class="bg-slate-100">
+         <tr>
+          <th class="p-3 text-left">
+           Date
+          </th>
+          <th class="p-3 text-left">
+           User
+          </th>
+          <th class="p-3 text-left">
+           Company
+          </th>
+          <th class="p-3 text-left">
+           Field
+          </th>
+          <th class="p-3 text-left">
+           Old Value
+          </th>
+          <th class="p-3 text-left">
+           New Value
+          </th>
+         </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100" id="auditTable">
+        </tbody>
+       </table>
       </div>
+     </div>
     </section>
 
-    <!-- NAV -->
-    <nav class="px-4 md:px-6 flex gap-1 border-b border-slate-200 bg-white overflow-x-auto no-scrollbar">
-      <button data-tab="leads" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-blue-700 text-blue-700 bg-blue-50">Master Leads Dashboard</button>
-      <button data-tab="calls" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Call Tracker</button>
-      <button data-tab="walks" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Property Walk Tracker</button>
-      <button data-tab="followups" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Follow-Up Automation</button>
-      <button data-tab="associations" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Associations</button>
-      <button data-tab="proposals" class="tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50">Proposal Tracker</button>
-    </nav>
+    <!-- ============================================================
+         ASSOCIATION NETWORKING TAB
+         Tracks BOMA, CAI, AAGD, IREM, vendor expos, and event follow-ups.
+    ============================================================ -->
+    <section class="tab-panel hidden" id="tab-associations">
+     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+      <h2 class="font-black text-lg mb-4">
+       Association Networking
+      </h2>
+      <p class="text-sm text-slate-500 mb-4">
+       Track property management associations, networking events, contacts made, and follow-up actions.
+      </p>
+      <div class="overflow-x-auto">
+       <table class="w-full text-sm">
+        <thead class="bg-slate-100">
+         <tr>
+          <th class="p-3 text-left">Organization</th>
+          <th class="p-3 text-left">Event</th>
+          <th class="p-3 text-left">Date</th>
+          <th class="p-3 text-left">Attending</th>
+          <th class="p-3 text-left">Contacts Made</th>
+          <th class="p-3 text-left">Follow Up</th>
+         </tr>
+        </thead>
+        <tbody id="assocTable"></tbody>
+       </table>
+      </div>
+     </div>
+    </section>
 
-    <main class="flex-1 p-4 md:p-6">
-
-      <!-- LEADS TAB -->
-      <section id="tab-leads" class="tab-panel">
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div>
-              <h2 class="font-black text-lg">Master Leads Dashboard</h2>
-              <p class="text-sm text-slate-500">Live cloud-synced lead data. Changes update across logged-in users.</p>
-            </div>
-            <button onclick="exportCSV()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold">Export CSV</button>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-              <thead class="bg-slate-100 border-b border-slate-200">
-                <tr>
-                  <th class="px-4 py-3 font-black text-slate-600">Priority</th>
-                  <th class="px-4 py-3 font-black text-slate-600 min-w-64">Company</th>
-                  <th class="px-4 py-3 font-black text-slate-600 min-w-64">Vendor Status</th>
-                  <th class="px-4 py-3 font-black text-slate-600">Segment</th>
-                  <th class="px-4 py-3 font-black text-slate-600 min-w-56">Contact</th>
-                  <th class="px-4 py-3 font-black text-slate-600 min-w-56">Title</th>
-                  <th class="px-4 py-3 font-black text-slate-600">Phone</th>
-                  <th class="px-4 py-3 font-black text-slate-600 min-w-56">Email</th>
-                  <th class="px-4 py-3 font-black text-slate-600">City</th>
-                  <th class="px-4 py-3 font-black text-slate-600 min-w-52">Status</th>
-                  <th class="px-4 py-3 font-black text-slate-600">Score</th>
-                  <th class="px-4 py-3 font-black text-slate-600 min-w-40">Last Contact</th>
-                  <th class="px-4 py-3 font-black text-slate-600 min-w-40">Next Follow Up</th>
-                  <th class="px-4 py-3 font-black text-slate-600 min-w-80">Notes</th>
-                </tr>
-              </thead>
-              <tbody id="leadsTable" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- CALL TRACKER -->
-      <section id="tab-calls" class="tab-panel hidden">
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-slate-200">
-            <h2 class="font-black text-lg">Call Tracker</h2>
-            <p class="text-sm text-slate-500">Log every touchpoint and set your next follow-up date.</p>
-          </div>
-
-          <div class="p-4 grid grid-cols-1 md:grid-cols-6 gap-3 border-b border-slate-200">
-            <input id="callDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
-            <input id="callCompany" placeholder="Company" class="border rounded-xl px-3 py-2 text-sm" />
-            <input id="callContact" placeholder="Contact" class="border rounded-xl px-3 py-2 text-sm" />
-
-            <select id="callOutcome" class="border rounded-xl px-3 py-2 text-sm">
-              <option>No Answer</option>
-              <option>Gatekeeper</option>
-              <option>Left Voicemail</option>
-              <option>Interested</option>
-              <option>Not Interested</option>
-              <option>Needs Follow Up</option>
-              <option>Wants Proposal</option>
-              <option>Wants Site Visit</option>
-            </select>
-
-            <input id="callFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm" />
-            <button onclick="addCall()" class="bg-blue-700 text-white rounded-xl font-bold text-sm">Add Call</button>
-            <textarea id="callNotes" placeholder="Notes" class="md:col-span-6 border rounded-xl px-3 py-2 text-sm"></textarea>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead class="bg-slate-100">
-                <tr>
-                  <th class="p-3 text-left">Date</th>
-                  <th class="p-3 text-left">Company</th>
-                  <th class="p-3 text-left">Contact</th>
-                  <th class="p-3 text-left">Outcome</th>
-                  <th class="p-3 text-left">Follow Up</th>
-                  <th class="p-3 text-left">Notes</th>
-                </tr>
-              </thead>
-              <tbody id="callsTable" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- PROPERTY WALK TRACKER -->
-      <section id="tab-walks" class="tab-panel hidden">
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-slate-200">
-            <h2 class="font-black text-lg">Property Walk Tracker</h2>
-            <p class="text-sm text-slate-500">Track site walks, issues found, risk level, and proposal needs.</p>
-          </div>
-
-          <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-3 border-b border-slate-200">
-            <input id="walkProperty" placeholder="Property" class="border rounded-xl px-3 py-2 text-sm" />
-            <input id="walkManager" placeholder="Manager" class="border rounded-xl px-3 py-2 text-sm" />
-            <input id="walkDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
-
-            <select id="walkType" class="border rounded-xl px-3 py-2 text-sm">
-              <option>Multifamily</option>
-              <option>HOA</option>
-              <option>Commercial</option>
-              <option>Retail</option>
-              <option>Industrial</option>
-              <option>Senior Living</option>
-            </select>
-
-            <select id="walkIssue" class="border rounded-xl px-3 py-2 text-sm">
-              <option>Sidewalk Settlement</option>
-              <option>ADA Trip Hazard</option>
-              <option>Pool Deck</option>
-              <option>Dumpster Pad</option>
-              <option>Parking Lot Settlement</option>
-              <option>Void Filling</option>
-              <option>Curb/Gutter</option>
-              <option>Loading Dock</option>
-              <option>Entryway Settlement</option>
-            </select>
-
-            <select id="walkRisk" class="border rounded-xl px-3 py-2 text-sm">
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
-              <option>Urgent</option>
-            </select>
-
-            <label class="flex items-center gap-2 text-sm font-bold">
-              <input id="walkProposal" type="checkbox" /> Proposal Needed
-            </label>
-
-            <button onclick="addWalk()" class="bg-blue-700 text-white rounded-xl font-bold text-sm">Add Walk</button>
-            <input id="walkFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm md:col-span-4" />
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead class="bg-slate-100">
-                <tr>
-                  <th class="p-3 text-left">Property</th>
-                  <th class="p-3 text-left">Manager</th>
-                  <th class="p-3 text-left">Date</th>
-                  <th class="p-3 text-left">Type</th>
-                  <th class="p-3 text-left">Issues</th>
-                  <th class="p-3 text-left">Risk</th>
-                  <th class="p-3 text-left">Proposal</th>
-                  <th class="p-3 text-left">Follow Up</th>
-                </tr>
-              </thead>
-              <tbody id="walksTable" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- FOLLOW UP AUTOMATION -->
-      <section id="tab-followups" class="tab-panel hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-            <h2 class="font-black text-lg mb-4">Lead Scoring Criteria</h2>
-            <div class="space-y-3">
-              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Multifamily Portfolio</span><b class="text-blue-700">+10</b></div>
-              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Commercial Portfolio</span><b class="text-blue-700">+8</b></div>
-              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>HOA Portfolio</span><b class="text-blue-700">+7</b></div>
-              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Multiple DFW Properties</span><b class="text-blue-700">+10</b></div>
-              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Meeting Scheduled</span><b class="text-blue-700">+20</b></div>
-              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Proposal Sent</span><b class="text-blue-700">+25</b></div>
-              <div class="flex justify-between p-3 bg-slate-50 rounded-xl"><span>Property Walk Scheduled</span><b class="text-blue-700">+30</b></div>
-            </div>
-          </div>
-
-          <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-            <h2 class="font-black text-lg mb-4">Hot Leads</h2>
-            <div id="hotLeads" class="space-y-3"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ASSOCIATIONS -->
-      <section id="tab-associations" class="tab-panel hidden">
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-          <h2 class="font-black text-lg mb-4">Association Networking</h2>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead class="bg-slate-100">
-                <tr>
-                  <th class="p-3 text-left">Organization</th>
-                  <th class="p-3 text-left">Event</th>
-                  <th class="p-3 text-left">Date</th>
-                  <th class="p-3 text-left">Attending</th>
-                  <th class="p-3 text-left">Contacts Made</th>
-                  <th class="p-3 text-left">Follow Up</th>
-                </tr>
-              </thead>
-              <tbody id="assocTable"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- PROPOSALS -->
-      <section id="tab-proposals" class="tab-panel hidden">
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-slate-200">
-            <h2 class="font-black text-lg">Proposal Tracker</h2>
-          </div>
-
-          <div class="p-4 grid grid-cols-1 md:grid-cols-6 gap-3 border-b border-slate-200">
-            <input id="proposalCompany" placeholder="Company" class="border rounded-xl px-3 py-2 text-sm" />
-            <input id="proposalProperty" placeholder="Property" class="border rounded-xl px-3 py-2 text-sm" />
-            <input id="proposalAmount" type="number" placeholder="Amount" class="border rounded-xl px-3 py-2 text-sm" />
-            <input id="proposalDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
-
-            <select id="proposalStatus" class="border rounded-xl px-3 py-2 text-sm">
-              <option>Drafting</option>
-              <option>Sent</option>
-              <option>Reviewing</option>
-              <option>Negotiating</option>
-              <option>Approved</option>
-              <option>Rejected</option>
-            </select>
-
-            <button onclick="addProposal()" class="bg-blue-700 text-white rounded-xl font-bold text-sm">Add Proposal</button>
-            <input id="proposalFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm md:col-span-6" />
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead class="bg-slate-100">
-                <tr>
-                  <th class="p-3 text-left">Company</th>
-                  <th class="p-3 text-left">Property</th>
-                  <th class="p-3 text-left">Amount</th>
-                  <th class="p-3 text-left">Date Sent</th>
-                  <th class="p-3 text-left">Status</th>
-                  <th class="p-3 text-left">Follow Up</th>
-                </tr>
-              </thead>
-              <tbody id="proposalTable" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-    </main>
+    <section class="tab-panel hidden" id="tab-proposals">
+     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div class="p-4 border-b border-slate-200">
+       <h2 class="font-black text-lg">
+        Proposal Tracker
+       </h2>
+      </div>
+      <div class="p-4 grid grid-cols-1 md:grid-cols-6 gap-3 border-b border-slate-200">
+       <input class="border rounded-xl px-3 py-2 text-sm" id="proposalCompany" placeholder="Company"/>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="proposalProperty" placeholder="Property"/>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="proposalAmount" placeholder="Amount" type="number"/>
+       <input class="border rounded-xl px-3 py-2 text-sm" id="proposalDate" type="date"/>
+       <select class="border rounded-xl px-3 py-2 text-sm" id="proposalStatus">
+        <option>
+         Drafting
+        </option>
+        <option>
+         Sent
+        </option>
+        <option>
+         Reviewing
+        </option>
+        <option>
+         Negotiating
+        </option>
+        <option>
+         Approved
+        </option>
+        <option>
+         Rejected
+        </option>
+       </select>
+       <button class="bg-blue-700 text-white rounded-xl font-bold text-sm" onclick="addProposal()">
+        Add Proposal
+       </button>
+       <input class="border rounded-xl px-3 py-2 text-sm md:col-span-6" id="proposalFollowUp" type="date"/>
+      </div>
+      <div class="overflow-x-auto">
+       <table class="w-full text-sm">
+        <thead class="bg-slate-100">
+         <tr>
+          <th class="p-3 text-left">
+           Company
+          </th>
+          <th class="p-3 text-left">
+           Property
+          </th>
+          <th class="p-3 text-left">
+           Amount
+          </th>
+          <th class="p-3 text-left">
+           Date Sent
+          </th>
+          <th class="p-3 text-left">
+           Status
+          </th>
+          <th class="p-3 text-left">
+           Follow Up
+          </th>
+          <th class="p-3 text-left">
+           PDF
+          </th>
+         </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100" id="proposalTable">
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </section>
+   </main>
   </div>
-
-  <!-- ADD LEAD MODAL -->
-  <div id="leadModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-bg">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-6">
-      <div class="flex justify-between items-center mb-5">
-        <h2 class="text-xl font-black">Add New Prospect</h2>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-2xl">&times;</button>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <select id="newPriority" class="border rounded-xl px-3 py-2 text-sm">
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
-        </select>
-
-        <select id="newSegment" class="border rounded-xl px-3 py-2 text-sm">
-          <option>Multifamily</option>
-          <option>HOA</option>
-          <option>Commercial</option>
-          <option>Industrial</option>
-          <option>Retail</option>
-          <option>Senior Living</option>
-        </select>
-
-        <input id="newCompany" placeholder="Company Name" class="md:col-span-2 border rounded-xl px-3 py-2 text-sm" />
-        <input id="newContact" placeholder="Contact Name" class="border rounded-xl px-3 py-2 text-sm" />
-        <input id="newTitle" placeholder="Title" class="border rounded-xl px-3 py-2 text-sm" />
-        <input id="newPhone" placeholder="Phone" class="border rounded-xl px-3 py-2 text-sm" />
-        <input id="newEmail" placeholder="Email" class="border rounded-xl px-3 py-2 text-sm" />
-        <input id="newCity" placeholder="City" class="border rounded-xl px-3 py-2 text-sm" />
-
-        <select id="newVendorStatus" class="border rounded-xl px-3 py-2 text-sm">
-          <option>Not Started</option>
-          <option>Need Vendor Portal</option>
-          <option>Application Requested</option>
-          <option>Application Received</option>
-          <option>Application Submitted</option>
-          <option>Waiting on Insurance Review</option>
-          <option>Waiting on W9/Compliance Docs</option>
-          <option>Waiting on COI Requirements</option>
-          <option>COI Submitted</option>
-          <option>Background Check Required</option>
-          <option>Approved Vendor</option>
-          <option>Active Vendor</option>
-          <option>Rejected / Not Accepted</option>
-          <option>Dormant Vendor</option>
-        </select>
-
-        <input id="newFollowUp" type="date" class="border rounded-xl px-3 py-2 text-sm" />
-        <textarea id="newNotes" placeholder="Notes" class="md:col-span-2 border rounded-xl px-3 py-2 text-sm" rows="3"></textarea>
-      </div>
-
-      <button onclick="addLead()" class="w-full mt-5 bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-xl font-black">Add to Pipeline</button>
+  <div class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-bg" id="leadModal">
+   <div class="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-6">
+    <div class="flex justify-between items-center mb-5">
+     <h2 class="text-xl font-black">
+      Add New Prospect
+     </h2>
+     <button class="text-slate-400 hover:text-slate-700 text-2xl" onclick="closeModal()">
+      ×
+     </button>
     </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+     <select class="border rounded-xl px-3 py-2 text-sm" id="newPriority">
+      <option>
+       High
+      </option>
+      <option>
+       Medium
+      </option>
+      <option>
+       Low
+      </option>
+     </select>
+     <select class="border rounded-xl px-3 py-2 text-sm" id="newSegment">
+      <option>
+       Multifamily
+      </option>
+      <option>
+       HOA
+      </option>
+      <option>
+       Commercial
+      </option>
+      <option>
+       Industrial
+      </option>
+      <option>
+       Retail
+      </option>
+      <option>
+       Senior Living
+      </option>
+     </select>
+     <input class="md:col-span-2 border rounded-xl px-3 py-2 text-sm" id="newCompany" placeholder="Company Name"/>
+     <input class="border rounded-xl px-3 py-2 text-sm" id="newContact" placeholder="Contact Name"/>
+     <input class="border rounded-xl px-3 py-2 text-sm" id="newTitle" placeholder="Title"/>
+     <input class="border rounded-xl px-3 py-2 text-sm" id="newPhone" placeholder="Phone"/>
+     <input class="border rounded-xl px-3 py-2 text-sm" id="newEmail" placeholder="Email"/>
+     <input class="border rounded-xl px-3 py-2 text-sm" id="newCity" placeholder="City"/>
+     <select class="border rounded-xl px-3 py-2 text-sm" id="newVendorStatus">
+      <option>
+       Not Started
+      </option>
+      <option>
+       Need Vendor Portal
+      </option>
+      <option>
+       Application Requested
+      </option>
+      <option>
+       Application Received
+      </option>
+      <option>
+       Application Submitted
+      </option>
+      <option>
+       Waiting on Insurance Review
+      </option>
+      <option>
+       Waiting on W9/Compliance Docs
+      </option>
+      <option>
+       Waiting on COI Requirements
+      </option>
+      <option>
+       COI Submitted
+      </option>
+      <option>
+       Background Check Required
+      </option>
+      <option>
+       Approved Vendor
+      </option>
+      <option>
+       Active Vendor
+      </option>
+      <option>
+       Rejected / Not Accepted
+      </option>
+      <option>
+       Dormant Vendor
+      </option>
+     </select>
+     <input class="border rounded-xl px-3 py-2 text-sm" id="newFollowUp" type="date"/>
+     <textarea class="md:col-span-2 border rounded-xl px-3 py-2 text-sm" id="newNotes" placeholder="Notes" rows="3"></textarea>
+    </div>
+    <button class="w-full mt-5 bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-xl font-black" onclick="addLead()">
+     Add to Pipeline
+    </button>
+   </div>
   </div>
-
-  <!-- FIREBASE APP SCRIPT -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import { getFirestore, collection, doc, addDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyA_UZZFKE5wvbKfKuo5Q1U4FNzmvgQgjc4",
-      authDomain: "kke-sales-command-center.firebaseapp.com",
-      projectId: "kke-sales-command-center",
-      storageBucket: "kke-sales-command-center.firebasestorage.app",
-      messagingSenderId: "898170339590",
-      appId: "1:898170339590:web:7b9a7a25c7943c5e0f9e87",
-      measurementId: "G-W7BYEKDD3R"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const STATUSES = [
-      "New Lead",
-      "Researching",
-      "Contacted",
-      "Left Voicemail",
-      "Email Sent",
-      "Follow Up Needed",
-      "Meeting Scheduled",
-      "Property Walk Scheduled",
-      "Proposal Sent",
-      "Won",
-      "Lost",
-      "Dormant"
-    ];
-
-    const VENDOR_STATUSES = [
-      "Not Started",
-      "Need Vendor Portal",
-      "Application Requested",
-      "Application Received",
-      "Application Submitted",
-      "Waiting on Insurance Review",
-      "Waiting on W9/Compliance Docs",
-      "Waiting on COI Requirements",
-      "COI Submitted",
-      "Background Check Required",
-      "Approved Vendor",
-      "Active Vendor",
-      "Rejected / Not Accepted",
-      "Dormant Vendor"
-    ];
-
-    const defaultLeads = [
-      {id:"1",priority:"High",company:"Greystar",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Managing Director / Regional Property Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas property management presence confirmed; individual contact needed.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"2",priority:"High",company:"Lincoln Property Company",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Multifamily / Property Management Leadership",phone:"214-740-3300",email:"info@lpc.com",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Headquarters: 8111 Douglas Avenue, Suite 600, Dallas, TX 75225.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"3",priority:"High",company:"RPM Living",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Property Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas regional office listed at 8111 Preston Road, Suite 900.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"4",priority:"High",company:"Dominium",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Property Management Inquiries",phone:"214-303-9011",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas office: 4835 Lyndon B. Johnson Fwy, Suite 1000.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"5",priority:"High",company:"MAA",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Property Manager / Maintenance Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify local office phone/contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"6",priority:"High",company:"Cortland",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Operations / Service Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify local office phone/contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"7",priority:"Medium",company:"Knightvest Residential",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Construction / Asset Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"8",priority:"High",company:"BH Management Services",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Maintenance Director",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"9",priority:"High",company:"Avenue5 Residential",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Facilities",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"10",priority:"Medium",company:"ZRS Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Portfolio Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"11",priority:"High",company:"Bell Partners",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Property Management",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"12",priority:"Medium",company:"Camden Property Trust",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Vice President / Property Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"13",priority:"High",company:"Weidner Apartment Homes",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Area Manager / Maintenance Supervisor",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"14",priority:"Medium",company:"Gables Residential",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Property Director / Regional Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"15",priority:"High",company:"Willow Bridge Property Company",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Property Management",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"16",priority:"Medium",company:"CWS Apartment Homes",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Portfolio Director / Regional Manager",phone:"",email:"",city:"Plano",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"17",priority:"Medium",company:"Milestone Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Lead / Property Management",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"18",priority:"High",company:"Fairfield Residential",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"19",priority:"High",company:"UDR, Inc.",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Asset Manager / Property Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"20",priority:"Low",company:"Tonti Properties",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Property Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"21",priority:"High",company:"ConAm Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"22",priority:"High",company:"Bridge Property Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Area Manager / Property Management",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"23",priority:"Medium",company:"CAF Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Maintenance Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"24",priority:"Medium",company:"Valiant Residential",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Regional Manager / Property Management",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"25",priority:"High",company:"Westdale Real Estate Investment and Management",vendorStatus:"Not Started",segment:"Multifamily",contact:"",title:"Property Management / Asset Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Company-level multifamily/commercial target; verify contact.",portfolioType:"Multifamily Portfolio",multipleProperties:true},
-      {id:"26",priority:"High",company:"CBRE Dallas",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Property Manager / Facilities Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate/property management target; verify local contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
-      {id:"27",priority:"High",company:"JLL Dallas",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Director of Facilities / Property Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate/property management target; verify local contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
-      {id:"28",priority:"High",company:"Cushman & Wakefield DFW",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Senior Property Manager / Facilities",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate/property management target; verify local contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
-      {id:"29",priority:"High",company:"Stream Realty Partners",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Property Manager / Asset Services",phone:"214-267-0400",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Corporate HQ: Trammell Crow Center, 2001 Ross Avenue, Suite 400, Dallas, TX 75201.",portfolioType:"Commercial Portfolio",multipleProperties:true},
-      {id:"30",priority:"Medium",company:"Transwestern Dallas",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Asset Services / Property Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas commercial real estate services target; verify direct contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
-      {id:"31",priority:"High",company:"Colliers Dallas",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Senior Real Estate Manager / Property Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate/property management target; verify local contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
-      {id:"32",priority:"Medium",company:"Younger Partners",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Director of Property Management",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate target; verify contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
-      {id:"33",priority:"High",company:"Holt Lunsford Commercial",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Director of Operations / Property Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate target; verify contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
-      {id:"34",priority:"Medium",company:"Newmark Dallas",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Senior Property Manager / Facilities",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate target; verify contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
-      {id:"35",priority:"Medium",company:"Gaedeke Group",vendorStatus:"Not Started",segment:"Commercial",contact:"",title:"Senior Property Manager",phone:"",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Commercial real estate target; verify contact.",portfolioType:"Commercial Portfolio",multipleProperties:true},
-      {id:"36",priority:"High",company:"FirstService Residential Dallas",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Director of Management / Community Manager",phone:"214-871-9700",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas office: 14951 N. Dallas Pkwy, Ste. 600, Dallas, TX 75254.",portfolioType:"HOA Portfolio",multipleProperties:true},
-      {id:"37",priority:"High",company:"Associa Principal Management Group",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Senior Community Manager",phone:"214-368-4030",email:"",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Dallas HOA management company; verify current office/contact.",portfolioType:"HOA Portfolio",multipleProperties:true},
-      {id:"38",priority:"High",company:"Goodwin & Company Dallas-Fort Worth",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Community Association Manager / Director",phone:"214-445-2700",email:"",city:"Richardson",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Office: 2425 N Central Expressway, #500, Richardson, TX 75080.",portfolioType:"HOA Portfolio",multipleProperties:true},
-      {id:"39",priority:"Medium",company:"SBB Community Management",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Community Association Manager",phone:"",email:"",city:"Dallas-Fort Worth",status:"Researching",lastContact:"",nextFollowUp:"",notes:"DFW HOA management target; verify direct phone/contact.",portfolioType:"HOA Portfolio",multipleProperties:true},
-      {id:"40",priority:"Medium",company:"RTI / Community Management Associates Inc. (CMA)",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Area Manager / Community Manager",phone:"972-943-2800",email:"",city:"Plano",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Office listed at 1800 Preston Park Blvd, Suite 200, Plano, TX 75093.",portfolioType:"HOA Portfolio",multipleProperties:true},
-      {id:"41",priority:"High",company:"RealManage DFW",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Director of Operations / Community Manager",phone:"214-460-8439",email:"",city:"Rowlett",status:"Researching",lastContact:"",nextFollowUp:"",notes:"CAI DFW listing shows RealManage contact in Rowlett.",portfolioType:"HOA Portfolio",multipleProperties:true},
-      {id:"42",priority:"Medium",company:"Neighborhood Management",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Senior Community Manager",phone:"",email:"",city:"Allen",status:"Researching",lastContact:"",nextFollowUp:"",notes:"HOA management target; verify current phone/contact.",portfolioType:"HOA Portfolio",multipleProperties:true},
-      {id:"43",priority:"Medium",company:"PMI DFW Properties",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Vendor / Property Management Contact",phone:"214-427-5050",email:"info@pmidfwproperties.com",city:"Dallas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Office/mailing address listed as 305 Spring Creek Village #483, Dallas, TX 75248.",portfolioType:"HOA Portfolio",multipleProperties:true},
-      {id:"44",priority:"Medium",company:"McCaw Property Management",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Property Management Contact",phone:"817-491-2553",email:"office@mccawpm.com",city:"Keller",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Office: 1670 Keller Parkway, Suite 100, Keller, TX 76248.",portfolioType:"HOA Portfolio",multipleProperties:true},
-      {id:"45",priority:"Low",company:"PMP Management AAMC",vendorStatus:"Not Started",segment:"HOA",contact:"",title:"Community Manager / Vendor Contact",phone:"661-295-4900",email:"",city:"DFW / Texas",status:"Researching",lastContact:"",nextFollowUp:"",notes:"Listed in CAI DFW management companies; verify local DFW contact.",portfolioType:"HOA Portfolio",multipleProperties:true}
-    ];
-
-    let leads = [];
-    let calls = [];
-    let walks = [];
-    let proposals = [];
-    let associations = [];
-    let unsubscribeFns = [];
-    let currentUser = null;
-
-    window.openModal = function() {
-      document.getElementById('leadModal').classList.remove('hidden');
-      document.getElementById('leadModal').classList.add('flex');
-    };
-
-    window.closeModal = function() {
-      document.getElementById('leadModal').classList.add('hidden');
-      document.getElementById('leadModal').classList.remove('flex');
-    };
-
-    function clearListeners() {
-      unsubscribeFns.forEach(fn => fn());
-      unsubscribeFns = [];
-    }
-
-    document.getElementById('loginBtn').addEventListener('click', async () => {
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      const err = document.getElementById('loginError');
-      err.classList.add('hidden');
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (error) {
-        err.textContent = error.message;
-        err.classList.remove('hidden');
-      }
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await signOut(auth);
-    });
-
-    onAuthStateChanged(auth, user => {
-      currentUser = user;
-      clearListeners();
-
-      if (user) {
-        document.getElementById('loginScreen').classList.add('hidden');
-        document.getElementById('appScreen').classList.remove('hidden');
-        document.getElementById('userStatus').textContent = `Logged in as ${user.email}`;
-        startFirestoreListeners();
-      } else {
-        document.getElementById('loginScreen').classList.remove('hidden');
-        document.getElementById('appScreen').classList.add('hidden');
-      }
-    });
-
-    function startFirestoreListeners() {
-      const leadsUnsub = onSnapshot(query(collection(db, "leads")), snapshot => {
-        leads = snapshot.docs.map(d => ({
-          id: d.id,
-          ...d.data(),
-          vendorStatus: d.data().vendorStatus || "Not Started"
-        }));
-
-        leads.sort((a, b) => Number(a.id) - Number(b.id));
-        document.getElementById('seedBtn').classList.toggle('hidden', leads.length > 0);
-        renderLeads();
-      });
-
-      const callsUnsub = onSnapshot(query(collection(db, "calls"), orderBy("createdAt", "desc")), snapshot => {
-        calls = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderCalls();
-      });
-
-      const walksUnsub = onSnapshot(query(collection(db, "walks"), orderBy("createdAt", "desc")), snapshot => {
-        walks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderWalks();
-      });
-
-      const proposalsUnsub = onSnapshot(query(collection(db, "proposals"), orderBy("createdAt", "desc")), snapshot => {
-        proposals = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderProposals();
-      });
-
-      const assocUnsub = onSnapshot(query(collection(db, "associations")), snapshot => {
-        associations = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-
-        if (associations.length === 0) {
-          associations = [
-            {organization:'BOMA Dallas',event:'',date:'',attending:'',contacts:'',followUp:''},
-            {organization:'CAI Texas',event:'',date:'',attending:'',contacts:'',followUp:''},
-            {organization:'Apartment Association of Greater Dallas',event:'',date:'',attending:'',contacts:'',followUp:''},
-            {organization:'IREM',event:'',date:'',attending:'',contacts:'',followUp:''},
-            {organization:'Vendor Expos',event:'',date:'',attending:'',contacts:'',followUp:''}
-          ];
-        }
-
-        renderAssociations();
-      });
-
-      unsubscribeFns = [leadsUnsub, callsUnsub, walksUnsub, proposalsUnsub, assocUnsub];
-    }
-
-    document.getElementById('seedBtn').addEventListener('click', async () => {
-      const existing = await getDocs(collection(db, "leads"));
-      if (!existing.empty) {
-        alert("Leads already exist. Seed cancelled to avoid duplicates.");
-        return;
-      }
-
-      const batch = writeBatch(db);
-
-      defaultLeads.forEach(lead => {
-        batch.set(doc(db, "leads", String(lead.id)), {
-          ...lead,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          updatedBy: currentUser?.email || ""
-        });
-      });
-
-      await batch.commit();
-      alert("Default lead list added to Firestore.");
-    });
-
-    function calculateScore(lead) {
-      let score = 0;
-      if (lead.portfolioType === 'Multifamily Portfolio' || lead.segment === 'Multifamily') score += 10;
-      if (lead.portfolioType === 'Commercial Portfolio' || lead.segment === 'Commercial') score += 8;
-      if (lead.portfolioType === 'HOA Portfolio' || lead.segment === 'HOA') score += 7;
-      if (lead.multipleProperties) score += 10;
-      if (lead.status === 'Meeting Scheduled') score += 20;
-      if (lead.status === 'Proposal Sent') score += 25;
-      if (lead.status === 'Property Walk Scheduled') score += 30;
-      if (lead.status === 'Won') score = 100;
-      return score;
-    }
-
-    function rowClass(lead) {
-      if (lead.status === 'Won') return 'bg-green-50 border-l-4 border-green-600';
-      if (lead.status === 'Lost' || lead.status === 'Dormant') return 'bg-gray-50 border-l-4 border-gray-400 opacity-70';
-      if (!lead.nextFollowUp) return 'bg-white border-l-4 border-transparent';
-
-      const today = new Date();
-      today.setHours(0,0,0,0);
-
-      const follow = new Date(lead.nextFollowUp + 'T00:00:00');
-      const diff = Math.ceil((follow - today) / 86400000);
-
-      if (diff < 0) return 'bg-red-50 border-l-4 border-red-600';
-      if (diff <= 3) return 'bg-yellow-50 border-l-4 border-yellow-500';
-      return 'bg-white border-l-4 border-transparent';
-    }
-
-    function renderLeads() {
-      const search = document.getElementById('searchInput').value.toLowerCase();
-      const tbody = document.getElementById('leadsTable');
-
-      const filtered = leads.filter(l =>
-        [
-          l.company,
-          l.city,
-          l.segment,
-          l.status,
-          l.vendorStatus,
-          l.notes
-        ].join(' ').toLowerCase().includes(search)
-      );
-
-      tbody.innerHTML = filtered.map(lead => `
-        <tr class="${rowClass(lead)} hover:bg-slate-50">
-          <td class="px-4 py-3 font-bold">${lead.priority || ''}</td>
-          <td class="px-4 py-3">
-            <b>${lead.company || ''}</b>
-            <div class="text-[10px] uppercase text-slate-400 font-bold">${lead.notes || ''}</div>
-          </td>
-
-          <td class="px-4 py-3">
-            <select class="border rounded-lg px-2 py-1 text-xs font-bold w-full" onchange="updateLead('${lead.id}', 'vendorStatus', this.value)">
-              ${VENDOR_STATUSES.map(s => `<option ${s===(lead.vendorStatus || 'Not Started')?'selected':''}>${s}</option>`).join('')}
-            </select>
-          </td>
-
-          <td class="px-4 py-3 font-semibold">${lead.segment || ''}</td>
-
-          <td class="px-4 py-3">
-            <input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${lead.contact || ''}" onchange="updateLead('${lead.id}', 'contact', this.value)" placeholder="Enter name">
-          </td>
-
-          <td class="px-4 py-3 text-slate-600">${lead.title || ''}</td>
-          <td class="px-4 py-3 font-mono text-xs font-bold whitespace-nowrap">${lead.phone || ''}</td>
-
-          <td class="px-4 py-3">
-            <input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${lead.email || ''}" onchange="updateLead('${lead.id}', 'email', this.value)" placeholder="email">
-          </td>
-
-          <td class="px-4 py-3">${lead.city || ''}</td>
-
-          <td class="px-4 py-3">
-            <select class="border rounded-lg px-2 py-1 text-xs font-bold" onchange="updateLead('${lead.id}', 'status', this.value)">
-              ${STATUSES.map(s => `<option ${s===lead.status?'selected':''}>${s}</option>`).join('')}
-            </select>
-          </td>
-
-          <td class="px-4 py-3 text-center font-black text-blue-700">${calculateScore(lead)}</td>
-
-          <td class="px-4 py-3">
-            <input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${lead.lastContact || ''}" onchange="updateLead('${lead.id}', 'lastContact', this.value)">
-          </td>
-
-          <td class="px-4 py-3">
-            <input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${lead.nextFollowUp || ''}" onchange="updateLead('${lead.id}', 'nextFollowUp', this.value)">
-          </td>
-
-          <td class="px-4 py-3">
-            <input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${lead.notes || ''}" onchange="updateLead('${lead.id}', 'notes', this.value)">
-          </td>
-        </tr>
-      `).join('');
-
-      renderMetrics();
-      renderHotLeads();
-    }
-
-    function renderMetrics() {
-      document.getElementById('metricTotal').textContent = leads.length;
-      document.getElementById('metricResearch').textContent = leads.filter(l => l.status === 'Researching').length;
-      document.getElementById('metricMeetings').textContent = leads.filter(l => l.status === 'Meeting Scheduled').length;
-      document.getElementById('metricWalks').textContent = leads.filter(l => l.status === 'Property Walk Scheduled').length;
-      document.getElementById('metricWon').textContent = leads.filter(l => l.status === 'Won').length;
-    }
-
-    function renderHotLeads() {
-      const box = document.getElementById('hotLeads');
-      if (!box) return;
-
-      const hot = [...leads].sort((a,b) => calculateScore(b)-calculateScore(a)).slice(0,10);
-
-      box.innerHTML = hot.map(l => `
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between">
-          <div>
-            <b>${l.company || ''}</b>
-            <div class="text-xs text-slate-500">${l.segment || ''} • ${l.status || ''} • ${l.vendorStatus || 'Not Started'}</div>
-          </div>
-          <span class="font-black text-blue-700">${calculateScore(l)}</span>
-        </div>
-      `).join('');
-    }
-
-    window.updateLead = async function(id, field, value) {
-      await updateDoc(doc(db, "leads", String(id)), {
-        [field]: value,
-        updatedAt: serverTimestamp(),
-        updatedBy: currentUser?.email || ""
-      });
-    };
-
-    window.addLead = async function() {
-      const segment = document.getElementById('newSegment').value;
-
-      await addDoc(collection(db, "leads"), {
-        priority: document.getElementById('newPriority').value,
-        company: document.getElementById('newCompany').value,
-        segment,
-        contact: document.getElementById('newContact').value,
-        title: document.getElementById('newTitle').value,
-        phone: document.getElementById('newPhone').value,
-        email: document.getElementById('newEmail').value,
-        city: document.getElementById('newCity').value,
-        status: 'New Lead',
-        vendorStatus: document.getElementById('newVendorStatus').value,
-        lastContact: '',
-        nextFollowUp: document.getElementById('newFollowUp').value,
-        notes: document.getElementById('newNotes').value,
-        portfolioType: segment + ' Portfolio',
-        multipleProperties: true,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        updatedBy: currentUser?.email || ""
-      });
-
-      closeModal();
-    };
-
-    window.addCall = async function() {
-      await addDoc(collection(db, "calls"), {
-        date: callDate.value,
-        company: callCompany.value,
-        contact: callContact.value,
-        outcome: callOutcome.value,
-        followUp: callFollowUp.value,
-        notes: callNotes.value,
-        createdAt: serverTimestamp(),
-        updatedBy: currentUser?.email || ""
-      });
-    };
-
-    function renderCalls() {
-      callsTable.innerHTML = calls.map(c => `
-        <tr>
-          <td class="p-3">${c.date || ''}</td>
-          <td class="p-3 font-bold">${c.company || ''}</td>
-          <td class="p-3">${c.contact || ''}</td>
-          <td class="p-3">${c.outcome || ''}</td>
-          <td class="p-3">${c.followUp || ''}</td>
-          <td class="p-3">${c.notes || ''}</td>
-        </tr>
-      `).join('');
-    }
-
-    window.addWalk = async function() {
-      await addDoc(collection(db, "walks"), {
-        property: walkProperty.value,
-        manager: walkManager.value,
-        date: walkDate.value,
-        type: walkType.value,
-        issue: walkIssue.value,
-        risk: walkRisk.value,
-        proposal: walkProposal.checked ? 'Yes' : 'No',
-        followUp: walkFollowUp.value,
-        createdAt: serverTimestamp(),
-        updatedBy: currentUser?.email || ""
-      });
-    };
-
-    function renderWalks() {
-      walksTable.innerHTML = walks.map(w => `
-        <tr>
-          <td class="p-3 font-bold">${w.property || ''}</td>
-          <td class="p-3">${w.manager || ''}</td>
-          <td class="p-3">${w.date || ''}</td>
-          <td class="p-3">${w.type || ''}</td>
-          <td class="p-3">${w.issue || ''}</td>
-          <td class="p-3 font-bold ${w.risk==='Urgent'?'text-red-700':''}">${w.risk || ''}</td>
-          <td class="p-3">${w.proposal || ''}</td>
-          <td class="p-3">${w.followUp || ''}</td>
-        </tr>
-      `).join('');
-    }
-
-    function renderAssociations() {
-      assocTable.innerHTML = associations.map(a => `
-        <tr>
-          <td class="p-3 font-bold">${a.organization || ''}</td>
-          <td class="p-3">${a.event || ''}</td>
-          <td class="p-3">${a.date || ''}</td>
-          <td class="p-3">${a.attending || ''}</td>
-          <td class="p-3">${a.contacts || ''}</td>
-          <td class="p-3">${a.followUp || ''}</td>
-        </tr>
-      `).join('');
-    }
-
-    window.addProposal = async function() {
-      await addDoc(collection(db, "proposals"), {
-        company: proposalCompany.value,
-        property: proposalProperty.value,
-        amount: Number(proposalAmount.value || 0),
-        date: proposalDate.value,
-        status: proposalStatus.value,
-        followUp: proposalFollowUp.value,
-        createdAt: serverTimestamp(),
-        updatedBy: currentUser?.email || ""
-      });
-    };
-
-    function renderProposals() {
-      proposalTable.innerHTML = proposals.map(p => `
-        <tr>
-          <td class="p-3 font-bold">${p.company || ''}</td>
-          <td class="p-3">${p.property || ''}</td>
-          <td class="p-3 font-bold">${Number(p.amount || 0).toLocaleString('en-US',{style:'currency',currency:'USD'})}</td>
-          <td class="p-3">${p.date || ''}</td>
-          <td class="p-3">${p.status || ''}</td>
-          <td class="p-3">${p.followUp || ''}</td>
-        </tr>
-      `).join('');
-    }
-
-    window.exportCSV = function() {
-      const headers = ['Priority','Company','Vendor Status','Segment','Contact','Title','Phone','Email','City','Status','Lead Score','Last Contact','Next Follow Up','Notes'];
-
-      const rows = leads.map(l => [
-        l.priority,
-        l.company,
-        l.vendorStatus || 'Not Started',
-        l.segment,
-        l.contact,
-        l.title,
-        l.phone,
-        l.email,
-        l.city,
-        l.status,
-        calculateScore(l),
-        l.lastContact,
-        l.nextFollowUp,
-        l.notes
-      ]);
-
-      const csv = [headers, ...rows]
-        .map(row => row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(','))
-        .join('\n');
-
-      const blob = new Blob([csv], {type:'text/csv'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'kke_property_management_leads.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-    };
-
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        b.className = 'tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50';
-      });
-
-      btn.className = 'tab-btn px-4 py-3 text-sm font-bold border-b-2 border-blue-700 text-blue-700 bg-blue-50';
-
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-      document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+   import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp,
+  getDocs,
+  writeBatch
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+// ------------------------------------------------------------
+// Firebase configuration
+// This connects the static GitHub Pages app to Firebase.
+// ------------------------------------------------------------
+const firebaseConfig = {
+  apiKey: "AIzaSyA_UZZFKE5wvbKfKuo5Q1U4FNzmvgQgjc4",
+  authDomain: "kke-sales-command-center.firebaseapp.com",
+  projectId: "kke-sales-command-center",
+  storageBucket: "kke-sales-command-center.firebasestorage.app",
+  messagingSenderId: "898170339590",
+  appId: "1:898170339590:web:7b9a7a25c7943c5e0f9e87",
+  measurementId: "G-W7BYEKDD3R"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ------------------------------------------------------------
+// Dropdown values
+// Update these lists if you want new CRM statuses.
+// ------------------------------------------------------------
+const STATUSES = ["New Lead", "Researching", "Contacted", "Left Voicemail", "Email Sent", "Follow Up Needed", "Meeting Scheduled", "Property Walk Scheduled", "Proposal Sent", "Won", "Lost", "Dormant"];
+const VENDOR_STATUSES = ["Not Started", "Need Vendor Portal", "Application Requested", "Application Received", "Application Submitted", "Waiting on Insurance Review", "Waiting on W9/Compliance Docs", "Waiting on COI Requirements", "COI Submitted", "Background Check Required", "Approved Vendor", "Active Vendor", "Rejected / Not Accepted", "Dormant Vendor"];
+
+// ------------------------------------------------------------
+// Default lead seed data
+// This is only used if Firestore is empty and Seed Default Leads is clicked.
+// These records preserve the detailed target list from the uploaded file.
+// ------------------------------------------------------------
+const defaultLeads = [{
+  id: "1",
+  priority: "High",
+  company: "Greystar",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Managing Director / Regional Property Management",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Dallas property management presence confirmed; individual contact needed.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "2",
+  priority: "High",
+  company: "Lincoln Property Company",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Multifamily / Property Management Leadership",
+  phone: "214-740-3300",
+  email: "info@lpc.com",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Headquarters: 8111 Douglas Avenue, Suite 600, Dallas, TX 75225.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "3",
+  priority: "High",
+  company: "RPM Living",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Manager / Property Management",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Dallas regional office listed at 8111 Preston Road, Suite 900.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "4",
+  priority: "High",
+  company: "Dominium",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Property Management Inquiries",
+  phone: "214-303-9011",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Dallas office: 4835 Lyndon B. Johnson Fwy, Suite 1000.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "5",
+  priority: "High",
+  company: "MAA",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Property Manager / Maintenance Manager",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify local office phone/contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "6",
+  priority: "High",
+  company: "Cortland",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Operations / Service Manager",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify local office phone/contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "7",
+  priority: "Medium",
+  company: "Knightvest Residential",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Construction / Asset Management",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "8",
+  priority: "High",
+  company: "BH Management Services",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Manager / Maintenance Director",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "9",
+  priority: "High",
+  company: "Avenue5 Residential",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Manager / Facilities",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "10",
+  priority: "Medium",
+  company: "ZRS Management",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Portfolio Manager",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "11",
+  priority: "High",
+  company: "Bell Partners",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Manager / Property Management",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "12",
+  priority: "Medium",
+  company: "Camden Property Trust",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Vice President / Property Manager",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "13",
+  priority: "High",
+  company: "Weidner Apartment Homes",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Area Manager / Maintenance Supervisor",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "14",
+  priority: "Medium",
+  company: "Gables Residential",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Property Director / Regional Manager",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "15",
+  priority: "High",
+  company: "Willow Bridge Property Company",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Property Management",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "16",
+  priority: "Medium",
+  company: "CWS Apartment Homes",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Portfolio Director / Regional Manager",
+  phone: "",
+  email: "",
+  city: "Plano",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "17",
+  priority: "Medium",
+  company: "Milestone Management",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Lead / Property Management",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "18",
+  priority: "High",
+  company: "Fairfield Residential",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Manager",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "19",
+  priority: "High",
+  company: "UDR, Inc.",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Asset Manager / Property Management",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "20",
+  priority: "Low",
+  company: "Tonti Properties",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Manager / Property Manager",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "21",
+  priority: "High",
+  company: "ConAm Management",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Manager",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "22",
+  priority: "High",
+  company: "Bridge Property Management",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Area Manager / Property Management",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "23",
+  priority: "Medium",
+  company: "CAF Management",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Manager / Maintenance Manager",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "24",
+  priority: "Medium",
+  company: "Valiant Residential",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Regional Manager / Property Management",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "25",
+  priority: "High",
+  company: "Westdale Real Estate Investment and Management",
+  vendorStatus: "Not Started",
+  segment: "Multifamily",
+  contact: "",
+  title: "Property Management / Asset Management",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Company-level multifamily/commercial target; verify contact.",
+  portfolioType: "Multifamily Portfolio",
+  multipleProperties: true
+}, {
+  id: "26",
+  priority: "High",
+  company: "CBRE Dallas",
+  vendorStatus: "Not Started",
+  segment: "Commercial",
+  contact: "",
+  title: "Property Manager / Facilities Manager",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Commercial real estate/property management target; verify local contact.",
+  portfolioType: "Commercial Portfolio",
+  multipleProperties: true
+}, {
+  id: "27",
+  priority: "High",
+  company: "JLL Dallas",
+  vendorStatus: "Not Started",
+  segment: "Commercial",
+  contact: "",
+  title: "Director of Facilities / Property Manager",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Commercial real estate/property management target; verify local contact.",
+  portfolioType: "Commercial Portfolio",
+  multipleProperties: true
+}, {
+  id: "28",
+  priority: "High",
+  company: "Cushman & Wakefield DFW",
+  vendorStatus: "Not Started",
+  segment: "Commercial",
+  contact: "",
+  title: "Senior Property Manager / Facilities",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Commercial real estate/property management target; verify local contact.",
+  portfolioType: "Commercial Portfolio",
+  multipleProperties: true
+}, {
+  id: "29",
+  priority: "High",
+  company: "Stream Realty Partners",
+  vendorStatus: "Not Started",
+  segment: "Commercial",
+  contact: "",
+  title: "Property Manager / Asset Services",
+  phone: "214-267-0400",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Corporate HQ: Trammell Crow Center, 2001 Ross Avenue, Suite 400, Dallas, TX 75201.",
+  portfolioType: "Commercial Portfolio",
+  multipleProperties: true
+}, {
+  id: "30",
+  priority: "Medium",
+  company: "Transwestern Dallas",
+  vendorStatus: "Not Started",
+  segment: "Commercial",
+  contact: "",
+  title: "Asset Services / Property Management",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Dallas commercial real estate services target; verify direct contact.",
+  portfolioType: "Commercial Portfolio",
+  multipleProperties: true
+}, {
+  id: "31",
+  priority: "High",
+  company: "Colliers Dallas",
+  vendorStatus: "Not Started",
+  segment: "Commercial",
+  contact: "",
+  title: "Senior Real Estate Manager / Property Manager",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Commercial real estate/property management target; verify local contact.",
+  portfolioType: "Commercial Portfolio",
+  multipleProperties: true
+}, {
+  id: "32",
+  priority: "Medium",
+  company: "Younger Partners",
+  vendorStatus: "Not Started",
+  segment: "Commercial",
+  contact: "",
+  title: "Director of Property Management",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Commercial real estate target; verify contact.",
+  portfolioType: "Commercial Portfolio",
+  multipleProperties: true
+}, {
+  id: "33",
+  priority: "High",
+  company: "Holt Lunsford Commercial",
+  vendorStatus: "Not Started",
+  segment: "Commercial",
+  contact: "",
+  title: "Director of Operations / Property Manager",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Commercial real estate target; verify contact.",
+  portfolioType: "Commercial Portfolio",
+  multipleProperties: true
+}, {
+  id: "34",
+  priority: "Medium",
+  company: "Newmark Dallas",
+  vendorStatus: "Not Started",
+  segment: "Commercial",
+  contact: "",
+  title: "Senior Property Manager / Facilities",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Commercial real estate target; verify contact.",
+  portfolioType: "Commercial Portfolio",
+  multipleProperties: true
+}, {
+  id: "35",
+  priority: "Medium",
+  company: "Gaedeke Group",
+  vendorStatus: "Not Started",
+  segment: "Commercial",
+  contact: "",
+  title: "Senior Property Manager",
+  phone: "",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Commercial real estate target; verify contact.",
+  portfolioType: "Commercial Portfolio",
+  multipleProperties: true
+}, {
+  id: "36",
+  priority: "High",
+  company: "FirstService Residential Dallas",
+  vendorStatus: "Not Started",
+  segment: "HOA",
+  contact: "",
+  title: "Director of Management / Community Manager",
+  phone: "214-871-9700",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Dallas office: 14951 N. Dallas Pkwy, Ste. 600, Dallas, TX 75254.",
+  portfolioType: "HOA Portfolio",
+  multipleProperties: true
+}, {
+  id: "37",
+  priority: "High",
+  company: "Associa Principal Management Group",
+  vendorStatus: "Not Started",
+  segment: "HOA",
+  contact: "",
+  title: "Senior Community Manager",
+  phone: "214-368-4030",
+  email: "",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Dallas HOA management company; verify current office/contact.",
+  portfolioType: "HOA Portfolio",
+  multipleProperties: true
+}, {
+  id: "38",
+  priority: "High",
+  company: "Goodwin & Company Dallas-Fort Worth",
+  vendorStatus: "Not Started",
+  segment: "HOA",
+  contact: "",
+  title: "Community Association Manager / Director",
+  phone: "214-445-2700",
+  email: "",
+  city: "Richardson",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Office: 2425 N Central Expressway, #500, Richardson, TX 75080.",
+  portfolioType: "HOA Portfolio",
+  multipleProperties: true
+}, {
+  id: "39",
+  priority: "Medium",
+  company: "SBB Community Management",
+  vendorStatus: "Not Started",
+  segment: "HOA",
+  contact: "",
+  title: "Community Association Manager",
+  phone: "",
+  email: "",
+  city: "Dallas-Fort Worth",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "DFW HOA management target; verify direct phone/contact.",
+  portfolioType: "HOA Portfolio",
+  multipleProperties: true
+}, {
+  id: "40",
+  priority: "Medium",
+  company: "RTI / Community Management Associates Inc. (CMA)",
+  vendorStatus: "Not Started",
+  segment: "HOA",
+  contact: "",
+  title: "Area Manager / Community Manager",
+  phone: "972-943-2800",
+  email: "",
+  city: "Plano",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Office listed at 1800 Preston Park Blvd, Suite 200, Plano, TX 75093.",
+  portfolioType: "HOA Portfolio",
+  multipleProperties: true
+}, {
+  id: "41",
+  priority: "High",
+  company: "RealManage DFW",
+  vendorStatus: "Not Started",
+  segment: "HOA",
+  contact: "",
+  title: "Director of Operations / Community Manager",
+  phone: "214-460-8439",
+  email: "",
+  city: "Rowlett",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "CAI DFW listing shows RealManage contact in Rowlett.",
+  portfolioType: "HOA Portfolio",
+  multipleProperties: true
+}, {
+  id: "42",
+  priority: "Medium",
+  company: "Neighborhood Management",
+  vendorStatus: "Not Started",
+  segment: "HOA",
+  contact: "",
+  title: "Senior Community Manager",
+  phone: "",
+  email: "",
+  city: "Allen",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "HOA management target; verify current phone/contact.",
+  portfolioType: "HOA Portfolio",
+  multipleProperties: true
+}, {
+  id: "43",
+  priority: "Medium",
+  company: "PMI DFW Properties",
+  vendorStatus: "Not Started",
+  segment: "HOA",
+  contact: "",
+  title: "Vendor / Property Management Contact",
+  phone: "214-427-5050",
+  email: "info@pmidfwproperties.com",
+  city: "Dallas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Office/mailing address listed as 305 Spring Creek Village #483, Dallas, TX 75248.",
+  portfolioType: "HOA Portfolio",
+  multipleProperties: true
+}, {
+  id: "44",
+  priority: "Medium",
+  company: "McCaw Property Management",
+  vendorStatus: "Not Started",
+  segment: "HOA",
+  contact: "",
+  title: "Property Management Contact",
+  phone: "817-491-2553",
+  email: "office@mccawpm.com",
+  city: "Keller",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Office: 1670 Keller Parkway, Suite 100, Keller, TX 76248.",
+  portfolioType: "HOA Portfolio",
+  multipleProperties: true
+}, {
+  id: "45",
+  priority: "Low",
+  company: "PMP Management AAMC",
+  vendorStatus: "Not Started",
+  segment: "HOA",
+  contact: "",
+  title: "Community Manager / Vendor Contact",
+  phone: "661-295-4900",
+  email: "",
+  city: "DFW / Texas",
+  status: "Researching",
+  lastContact: "",
+  nextFollowUp: "",
+  notes: "Listed in CAI DFW management companies; verify local DFW contact.",
+  portfolioType: "HOA Portfolio",
+  multipleProperties: true
+}];
+
+// ------------------------------------------------------------
+// Runtime application state
+// These arrays are filled by Firestore real-time listeners.
+// ------------------------------------------------------------
+let leads = [],
+  calls = [],
+  walks = [],
+  proposals = [],
+  associations = [],
+  auditLogs = [],
+  unsub = [],
+  currentUser = null;
+window.openModal = () => {
+  leadModal.classList.remove('hidden');
+  leadModal.classList.add('flex')
+};
+window.closeModal = () => {
+  leadModal.classList.add('hidden');
+  leadModal.classList.remove('flex')
+};
+const clearListeners = () => {
+  unsub.forEach(fn => fn());
+  unsub = []
+};
+
+loginBtn.addEventListener('click', async () => {
+  loginError.classList.add('hidden');
+  try {
+    await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
+  } catch (e) {
+    loginError.textContent = e.message;
+    loginError.classList.remove('hidden');
+  }
+});
+logoutBtn.addEventListener('click', () => signOut(auth));
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  clearListeners();
+  if (user) {
+    loginScreen.classList.add('hidden');
+    appScreen.classList.remove('hidden');
+    userStatus.textContent = `Logged in as ${user.email}`;
+    startFirestore();
+  } else {
+    loginScreen.classList.remove('hidden');
+    appScreen.classList.add('hidden');
+  }
+});
+
+// ------------------------------------------------------------
+// Firestore real-time listeners
+// Every logged-in user sees live shared updates from these collections.
+// ------------------------------------------------------------
+function startFirestore() {
+  unsub.push(onSnapshot(query(collection(db, "leads")), snap => {
+    leads = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data(),
+      vendorStatus: d.data().vendorStatus || "Not Started"
+    }));
+    leads.sort((a, b) => Number(a.id) - Number(b.id));
+    seedBtn.classList.toggle('hidden', leads.length > 0);
+    renderLeads();
+    renderKpis();
+  }));
+  unsub.push(onSnapshot(query(collection(db, "calls"), orderBy("createdAt", "desc")), snap => {
+    calls = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+    renderCalls();
+    renderKpis();
+  }));
+  unsub.push(onSnapshot(query(collection(db, "walks"), orderBy("createdAt", "desc")), snap => {
+    walks = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+    renderWalks();
+    renderKpis();
+  }));
+  unsub.push(onSnapshot(query(collection(db, "proposals"), orderBy("createdAt", "desc")), snap => {
+    proposals = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+    renderProposals();
+    renderKpis();
+  }));
+  unsub.push(onSnapshot(query(collection(db, "auditLogs"), orderBy("changedAt", "desc")), snap => {
+    auditLogs = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+    renderAuditLogs();
+  }));
+
+  unsub.push(onSnapshot(query(collection(db, "associations")), snap => {
+    associations = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data()
     }));
 
-    document.getElementById('searchInput').addEventListener('input', renderLeads);
+    if (associations.length === 0) {
+      associations = [
+        { organization: "BOMA Dallas", event: "", date: "", attending: "", contacts: "", followUp: "" },
+        { organization: "CAI Texas", event: "", date: "", attending: "", contacts: "", followUp: "" },
+        { organization: "Apartment Association of Greater Dallas", event: "", date: "", attending: "", contacts: "", followUp: "" },
+        { organization: "IREM", event: "", date: "", attending: "", contacts: "", followUp: "" },
+        { organization: "Vendor Expos", event: "", date: "", attending: "", contacts: "", followUp: "" }
+      ];
+    }
+
+    renderAssociations();
+  }));
+}
+
+seedBtn.addEventListener('click', async () => {
+  const existing = await getDocs(collection(db, "leads"));
+  if (!existing.empty) return alert("Leads already exist. Seed cancelled.");
+  const batch = writeBatch(db);
+  defaultLeads.forEach(l => batch.set(doc(db, "leads", String(l.id)), {
+    ...l,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    updatedBy: currentUser?.email || ""
+  }));
+  await batch.commit();
+  alert("Default leads added.");
+});
+
+// ------------------------------------------------------------
+// Lead scoring logic
+// Used in the table, hot leads list, and KPI dashboard.
+// ------------------------------------------------------------
+function calculateScore(l) {
+  let s = 0;
+  if (l.segment === 'Multifamily') s += 10;
+  if (l.segment === 'Commercial') s += 8;
+  if (l.segment === 'HOA') s += 7;
+  if (l.multipleProperties) s += 10;
+  if (l.status === 'Meeting Scheduled') s += 20;
+  if (l.status === 'Proposal Sent') s += 25;
+  if (l.status === 'Property Walk Scheduled') s += 30;
+  if (l.status === 'Won') s = 100;
+  return s;
+}
+
+function rowClass(l) {
+  if (l.status === 'Won') return 'bg-green-50 border-l-4 border-green-600';
+  if (l.status === 'Lost' || l.status === 'Dormant') return 'bg-gray-50 border-l-4 border-gray-400 opacity-70';
+  if (!l.nextFollowUp) return 'bg-white border-l-4 border-transparent';
+  const t = new Date();
+  t.setHours(0, 0, 0, 0);
+  const f = new Date(l.nextFollowUp + 'T00:00:00');
+  const d = Math.ceil((f - t) / 86400000);
+  if (d < 0) return 'bg-red-50 border-l-4 border-red-600';
+  if (d <= 3) return 'bg-yellow-50 border-l-4 border-yellow-500';
+  return 'bg-white border-l-4 border-transparent';
+}
+
+function opt(list, val) {
+  return list.map(s => `<option ${s===val?'selected':''}>${s}</option>`).join('')
+}
+
+// ------------------------------------------------------------
+// Master Leads Dashboard rendering
+// Builds the main editable lead table.
+// ------------------------------------------------------------
+function renderLeads() {
+  const search = searchInput.value.toLowerCase();
+  const filtered = leads.filter(l => [l.company, l.city, l.segment, l.status, l.vendorStatus, l.notes].join(' ').toLowerCase().includes(search));
+  leadsTable.innerHTML = filtered.map(l => `<tr class="${rowClass(l)} hover:bg-slate-50"><td class="px-4 py-3 font-bold">${l.priority||''}</td><td class="px-4 py-3"><b>${l.company||''}</b><div class="text-[10px] uppercase text-slate-400 font-bold">${l.notes||''}</div></td><td class="px-4 py-3"><select class="border rounded-lg px-2 py-1 text-xs font-bold w-full" onchange="updateLead('${l.id}','vendorStatus',this.value)">${opt(VENDOR_STATUSES,l.vendorStatus||'Not Started')}</select></td><td class="px-4 py-3 font-semibold">${l.segment||''}</td><td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${l.contact||''}" onchange="updateLead('${l.id}','contact',this.value)" placeholder="Enter name"></td><td class="px-4 py-3 text-slate-600">${l.title||''}</td><td class="px-4 py-3 font-mono text-xs font-bold whitespace-nowrap">${l.phone||''}</td><td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${l.email||''}" onchange="updateLead('${l.id}','email',this.value)" placeholder="email"></td><td class="px-4 py-3">${l.city||''}</td><td class="px-4 py-3"><select class="border rounded-lg px-2 py-1 text-xs font-bold" onchange="updateLead('${l.id}','status',this.value)">${opt(STATUSES,l.status)}</select></td><td class="px-4 py-3 text-center font-black text-blue-700">${calculateScore(l)}</td><td class="px-4 py-3"><input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${l.lastContact||''}" onchange="updateLead('${l.id}','lastContact',this.value)"></td><td class="px-4 py-3"><input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${l.nextFollowUp||''}" onchange="updateLead('${l.id}','nextFollowUp',this.value)"></td><td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${l.notes||''}" onchange="updateLead('${l.id}','notes',this.value)"></td></tr>`).join('');
+  renderMetrics();
+  renderHotLeads();
+}
+
+function renderMetrics() {
+  metricTotal.textContent = leads.length;
+  metricResearch.textContent = leads.filter(l => l.status === 'Researching').length;
+  metricMeetings.textContent = leads.filter(l => l.status === 'Meeting Scheduled').length;
+  metricWalks.textContent = leads.filter(l => l.status === 'Property Walk Scheduled').length;
+  metricWon.textContent = leads.filter(l => l.status === 'Won').length;
+}
+
+function renderHotLeads() {
+  hotLeads.innerHTML = [...leads].sort((a, b) => calculateScore(b) - calculateScore(a)).slice(0, 10).map(l => `<div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between"><div><b>${l.company||''}</b><div class="text-xs text-slate-500">${l.segment||''} • ${l.status||''} • ${l.vendorStatus||'Not Started'}</div></div><span class="font-black text-blue-700">${calculateScore(l)}</span></div>`).join('');
+}
+// ------------------------------------------------------------
+// Lead update handler with audit trail
+// Every changed field writes to both leads and auditLogs.
+// ------------------------------------------------------------
+window.updateLead = async (id, field, value) => {
+  const current = leads.find(l => String(l.id) === String(id));
+  const oldValue = current?.[field] ?? "";
+  if (String(oldValue) === String(value)) return;
+  await updateDoc(doc(db, "leads", String(id)), {
+    [field]: value,
+    updatedAt: serverTimestamp(),
+    updatedBy: currentUser?.email || ""
+  });
+  await addDoc(collection(db, "auditLogs"), {
+    collectionName: "leads",
+    documentId: String(id),
+    company: current?.company || "",
+    field,
+    oldValue: String(oldValue ?? ""),
+    newValue: String(value ?? ""),
+    changedBy: currentUser?.email || "",
+    changedAt: serverTimestamp()
+  });
+};
+window.addLead = async () => {
+  const segment = newSegment.value;
+  await addDoc(collection(db, "leads"), {
+    priority: newPriority.value,
+    company: newCompany.value,
+    segment,
+    contact: newContact.value,
+    title: newTitle.value,
+    phone: newPhone.value,
+    email: newEmail.value,
+    city: newCity.value,
+    status: 'New Lead',
+    vendorStatus: newVendorStatus.value,
+    lastContact: '',
+    nextFollowUp: newFollowUp.value,
+    notes: newNotes.value,
+    portfolioType: segment + ' Portfolio',
+    multipleProperties: true,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    updatedBy: currentUser?.email || ''
+  });
+  closeModal();
+};
+window.addCall = async () => addDoc(collection(db, "calls"), {
+  date: callDate.value,
+  company: callCompany.value,
+  contact: callContact.value,
+  outcome: callOutcome.value,
+  followUp: callFollowUp.value,
+  notes: callNotes.value,
+  createdAt: serverTimestamp(),
+  updatedBy: currentUser?.email || ''
+});
+
+function renderCalls() {
+  callsTable.innerHTML = calls.map(c => `<tr><td class="p-3">${c.date||''}</td><td class="p-3 font-bold">${c.company||''}</td><td class="p-3">${c.contact||''}</td><td class="p-3">${c.outcome||''}</td><td class="p-3">${c.followUp||''}</td><td class="p-3">${c.notes||''}</td></tr>`).join('');
+}
+window.addWalk = async () => addDoc(collection(db, "walks"), {
+  property: walkProperty.value,
+  address: walkAddress.value,
+  manager: walkManager.value,
+  date: walkDate.value,
+  type: walkType.value,
+  issue: walkIssue.value,
+  risk: walkRisk.value,
+  proposal: walkProposal.checked ? 'Yes' : 'No',
+  followUp: walkFollowUp.value,
+  createdAt: serverTimestamp(),
+  updatedBy: currentUser?.email || ''
+});
+
+function mapUrl(address, property) {
+  const q = encodeURIComponent(address || property || "");
+  return q ? `https://www.google.com/maps/search/?api=1&query=${q}` : "#";
+}
+
+function renderWalks() {
+  walksTable.innerHTML = walks.map(w => `<tr><td class="p-3 font-bold">${w.property||''}</td><td class="p-3">${w.address||''}</td><td class="p-3">${w.manager||''}</td><td class="p-3">${w.date||''}</td><td class="p-3">${w.type||''}</td><td class="p-3">${w.issue||''}</td><td class="p-3 font-bold ${w.risk==='Urgent'?'text-red-700':''}">${w.risk||''}</td><td class="p-3">${w.proposal||''}</td><td class="p-3">${w.followUp||''}</td><td class="p-3"><a class="text-blue-700 font-bold underline" target="_blank" href="${mapUrl(w.address,w.property)}">Open Map</a></td></tr>`).join('');
+}
+// ------------------------------------------------------------
+// Association Networking rendering
+// Read-only table of networking targets and follow-ups.
+// ------------------------------------------------------------
+function renderAssociations() {
+  assocTable.innerHTML = associations.map(a => `
+    <tr>
+      <td class="p-3 font-bold">${a.organization || ''}</td>
+      <td class="p-3">${a.event || ''}</td>
+      <td class="p-3">${a.date || ''}</td>
+      <td class="p-3">${a.attending || ''}</td>
+      <td class="p-3">${a.contacts || ''}</td>
+      <td class="p-3">${a.followUp || ''}</td>
+    </tr>
+  `).join('');
+}
+
+window.addProposal = async () => addDoc(collection(db, "proposals"), {
+  company: proposalCompany.value,
+  property: proposalProperty.value,
+  amount: Number(proposalAmount.value || 0),
+  date: proposalDate.value,
+  status: proposalStatus.value,
+  followUp: proposalFollowUp.value,
+  createdAt: serverTimestamp(),
+  updatedBy: currentUser?.email || ''
+});
+
+function renderProposals() {
+  proposalTable.innerHTML = proposals.map(p => `<tr><td class="p-3 font-bold">${p.company||''}</td><td class="p-3">${p.property||''}</td><td class="p-3 font-bold">${Number(p.amount||0).toLocaleString('en-US',{style:'currency',currency:'USD'})}</td><td class="p-3">${p.date||''}</td><td class="p-3">${p.status||''}</td><td class="p-3">${p.followUp||''}</td><td class="p-3"><button onclick="generateProposalPdf('${p.id}')" class="bg-slate-900 text-white px-3 py-1 rounded-lg text-xs font-bold">PDF</button></td></tr>`).join('');
+}
+window.generateProposalPdf = (id) => {
+  const p = proposals.find(x => String(x.id) === String(id));
+  if (!p) return alert("Proposal not found.");
+  const win = window.open("", "_blank");
+  const amount = Number(p.amount || 0).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  });
+  win.document.write(`<!doctype html><html><head><title>KKE Proposal</title><style>body{font-family:Arial,sans-serif;padding:40px;color:#0f172a} .header{border-bottom:4px solid #1d4ed8;padding-bottom:16px;margin-bottom:30px}.logo{font-size:28px;font-weight:900;color:#1d4ed8}.box{border:1px solid #cbd5e1;padding:16px;margin:14px 0;border-radius:10px}.label{font-size:12px;text-transform:uppercase;color:#64748b;font-weight:700}.value{font-size:18px;font-weight:700;margin-top:4px}button{background:#1d4ed8;color:white;border:0;padding:12px 18px;border-radius:8px;font-weight:bold}@media print{button{display:none}}</style></head><body><div class="header"><div class="logo">KKE Concrete Lifting</div><h1>Property Management Proposal Summary</h1></div><div class="box"><div class="label">Company</div><div class="value">${p.company||""}</div></div><div class="box"><div class="label">Property</div><div class="value">${p.property||""}</div></div><div class="box"><div class="label">Proposal Amount</div><div class="value">${amount}</div></div><div class="box"><div class="label">Date Sent</div><div class="value">${p.date||""}</div></div><div class="box"><div class="label">Status</div><div class="value">${p.status||""}</div></div><div class="box"><div class="label">Follow Up</div><div class="value">${p.followUp||""}</div></div><p style="margin-top:40px;color:#64748b">Generated from KKE Sales Command Center.</p><button onclick="window.print()">Print / Save as PDF</button></body></html>`);
+  win.document.close();
+};
+
+function isDueSoon(dateStr) {
+  if (!dateStr) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const d = new Date(dateStr + 'T00:00:00');
+  const diff = Math.ceil((d - today) / 86400000);
+  return diff <= 7;
+}
+
+function isThisWeek(dateStr) {
+  if (!dateStr) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const d = new Date(dateStr + 'T00:00:00');
+  const diff = Math.ceil((d - today) / 86400000);
+  return diff >= 0 && diff <= 7;
+}
+
+// ------------------------------------------------------------
+// Weekly KPI Dashboard rendering
+// Calculates snapshot metrics for sales meetings.
+// ------------------------------------------------------------
+function renderKpis() {
+  const card = document.getElementById('weeklyKpiCards');
+  if (!card) return;
+  const dueFollowups = leads.filter(l => isDueSoon(l.nextFollowUp) && !['Won', 'Lost', 'Dormant'].includes(l.status)).length;
+  const meetings = leads.filter(l => l.status === 'Meeting Scheduled').length;
+  const walksScheduled = leads.filter(l => l.status === 'Property Walk Scheduled').length + walks.filter(w => isThisWeek(w.date)).length;
+  const proposalsSent = proposals.filter(p => p.status === 'Sent' || p.status === 'Reviewing' || p.status === 'Negotiating').length;
+  const approvedVendors = leads.filter(l => ['Approved Vendor', 'Active Vendor'].includes(l.vendorStatus)).length;
+  const proposalValue = proposals.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+
+  const metrics = [
+    ['Follow-Ups Due', dueFollowups, 'text-red-700'],
+    ['Meetings Scheduled', meetings, 'text-orange-600'],
+    ['Property Walk Activity', walksScheduled, 'text-blue-700'],
+    ['Open Proposals', proposalsSent, 'text-purple-700'],
+    ['Approved/Active Vendors', approvedVendors, 'text-green-700'],
+    ['Proposal Pipeline', proposalValue.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }), 'text-slate-900']
+  ];
+  card.innerHTML = metrics.map(m => `<div class="bg-slate-50 border border-slate-200 rounded-2xl p-4"><p class="text-xs uppercase font-black text-slate-500">${m[0]}</p><p class="text-2xl font-black ${m[2]}">${m[1]}</p></div>`).join('');
+
+  const queue = document.getElementById('followUpQueue');
+  if (queue) {
+    const items = leads.filter(l => isDueSoon(l.nextFollowUp) && !['Won', 'Lost', 'Dormant'].includes(l.status)).sort((a, b) => (a.nextFollowUp || '').localeCompare(b.nextFollowUp || '')).slice(0, 12);
+    queue.innerHTML = items.length ? items.map(l => `<div class="p-3 rounded-xl border border-slate-200 bg-slate-50"><div class="font-black">${l.company||''}</div><div class="text-xs text-slate-500">${l.status||''} • ${l.vendorStatus||'Not Started'} • Due: ${l.nextFollowUp||''}</div><a class="inline-block mt-2 text-blue-700 text-xs font-bold underline" href="mailto:${l.email||''}?subject=KKE Follow-Up&body=Following up with ${encodeURIComponent(l.company||'your team')} regarding concrete lifting / vendor onboarding.">Draft Email</a></div>`).join('') : '<p class="text-sm text-slate-500">No follow-ups due in the next 7 days.</p>';
+  }
+
+  const vendor = document.getElementById('vendorKpiBreakdown');
+  if (vendor) {
+    const counts = {};
+    leads.forEach(l => counts[l.vendorStatus || 'Not Started'] = (counts[l.vendorStatus || 'Not Started'] || 0) + 1);
+    vendor.innerHTML = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([status, count]) => `<div class="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-200"><span class="font-bold text-slate-700">${status}</span><span class="font-black text-blue-700">${count}</span></div>`).join('');
+  }
+}
+
+// ------------------------------------------------------------
+// Audit Trail rendering
+// Shows who changed what and when.
+// ------------------------------------------------------------
+function renderAuditLogs() {
+  const tbody = document.getElementById('auditTable');
+  if (!tbody) return;
+  tbody.innerHTML = auditLogs.slice(0, 100).map(log => {
+    const date = log.changedAt?.toDate ? log.changedAt.toDate().toLocaleString() : '';
+    return `<tr><td class="p-3">${date}</td><td class="p-3">${log.changedBy||''}</td><td class="p-3 font-bold">${log.company||''}</td><td class="p-3">${log.field||''}</td><td class="p-3 text-slate-500">${log.oldValue||''}</td><td class="p-3 font-semibold">${log.newValue||''}</td></tr>`;
+  }).join('');
+}
+
+window.exportCSV = () => {
+  const headers = ['Priority', 'Company', 'Vendor Status', 'Segment', 'Contact', 'Title', 'Phone', 'Email', 'City', 'Status', 'Lead Score', 'Last Contact', 'Next Follow Up', 'Notes'];
+  const rows = leads.map(l => [l.priority, l.company, l.vendorStatus || 'Not Started', l.segment, l.contact, l.title, l.phone, l.email, l.city, l.status, calculateScore(l), l.lastContact, l.nextFollowUp, l.notes]);
+  const csv = [headers, ...rows].map(row => row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {
+    type: 'text/csv'
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'kke_property_management_leads.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn px-4 py-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:bg-slate-50');
+  btn.className = 'tab-btn px-4 py-3 text-sm font-bold border-b-2 border-blue-700 text-blue-700 bg-blue-50';
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+  document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+}));
+searchInput.addEventListener('input', renderLeads);
   </script>
-</body>
+ </body>
 </html>
