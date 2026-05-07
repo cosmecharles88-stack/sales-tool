@@ -834,6 +834,7 @@ const db = getFirestore(app);
 // ------------------------------------------------------------
 const STATUSES = ["New Lead", "Researching", "Contacted", "Left Voicemail", "Email Sent", "Follow Up Needed", "Meeting Scheduled", "Property Walk Scheduled", "Proposal Sent", "Won", "Lost", "Dormant"];
 const VENDOR_STATUSES = ["Not Started", "Need Vendor Portal", "Application Requested", "Application Received", "Application Submitted", "Waiting on Insurance Review", "Waiting on W9/Compliance Docs", "Waiting on COI Requirements", "COI Submitted", "Background Check Required", "Approved Vendor", "Active Vendor", "Rejected / Not Accepted", "Dormant Vendor"];
+const ATTENDING_OPTIONS = ["Not Decided", "Planning to Attend", "Registered", "Attended", "Skipping", "Follow Up Only"];
 
 // ------------------------------------------------------------
 // Default lead seed data
@@ -2102,22 +2103,54 @@ function eventLink(url, label) {
 // Association Networking rendering
 // Read-only table of networking targets and follow-ups.
 // ------------------------------------------------------------
+
+// ------------------------------------------------------------
+// Association Networking update handler
+// Saves attending status, contacts made, event details, and follow-up notes.
+// ------------------------------------------------------------
+window.updateAssociation = async (id, field, value) => {
+  const current = associations.find(a => String(a.id) === String(id));
+  const oldValue = current?.[field] ?? "";
+  if (String(oldValue) === String(value)) return;
+
+  await updateDoc(doc(db, "associations", String(id)), {
+    [field]: value,
+    updatedAt: serverTimestamp(),
+    updatedBy: currentUser?.email || ""
+  });
+
+  await addDoc(collection(db, "auditLogs"), {
+    collectionName: "associations",
+    documentId: String(id),
+    company: current?.organization || "",
+    field,
+    oldValue: String(oldValue ?? ""),
+    newValue: String(value ?? ""),
+    changedBy: currentUser?.email || "",
+    changedAt: serverTimestamp()
+  });
+};
+
 function renderAssociations() {
   assocTable.innerHTML = associations.map(a => `
     <tr>
       <td class="p-3 font-bold">${a.organization || ''}</td>
-      <td class="p-3">${a.event || ''}</td>
-      <td class="p-3 whitespace-nowrap">${a.date || ''}</td>
-      <td class="p-3 min-w-64">${a.location || ''}</td>
-      <td class="p-3 min-w-64">${a.audience || ''}</td>
-      <td class="p-3 min-w-72">${a.whyKke || a.notes || ''}</td>
-      <td class="p-3">${a.attending || ''}</td>
-      <td class="p-3">${a.contacts || ''}</td>
-      <td class="p-3 whitespace-nowrap">${a.followUp || ''}</td>
-      <td class="p-3 whitespace-nowrap">
-        ${eventLink(a.url, 'Event')}
-        <span class="text-slate-300 mx-1">|</span>
-        ${eventLink(eventCalendarUrl(a), 'Calendar')}
+      <td class="p-3">
+        <input class="w-full min-w-56 border rounded-lg px-2 py-1 text-xs" value="${a.event || ''}" onchange="updateAssociation('${a.id}', 'event', this.value)" placeholder="Event name">
+      </td>
+      <td class="p-3">
+        <input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${a.date || ''}" onchange="updateAssociation('${a.id}', 'date', this.value)">
+      </td>
+      <td class="p-3">
+        <select class="border rounded-lg px-2 py-1 text-xs font-bold min-w-40" onchange="updateAssociation('${a.id}', 'attending', this.value)">
+          ${opt(ATTENDING_OPTIONS, a.attending || 'Not Decided')}
+        </select>
+      </td>
+      <td class="p-3">
+        <textarea class="w-full min-w-64 border rounded-lg px-2 py-1 text-xs" rows="2" onchange="updateAssociation('${a.id}', 'contacts', this.value)" placeholder="Names, phone numbers, emails, notes">${a.contacts || ''}</textarea>
+      </td>
+      <td class="p-3">
+        <input class="w-full min-w-56 border rounded-lg px-2 py-1 text-xs" value="${a.followUp || ''}" onchange="updateAssociation('${a.id}', 'followUp', this.value)" placeholder="Next action / follow-up">
       </td>
     </tr>
   `).join('');
