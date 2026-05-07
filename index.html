@@ -586,7 +586,7 @@
          Association Networking
         </h2>
         <p class="text-sm text-slate-500">
-         Seeded with North Texas events where property managers, facility managers, infrastructure buyers, GCs, and procurement contacts are likely to be present.
+         Seeded with North Texas events where property managers, facility managers, infrastructure buyers, GCs, and procurement contacts are likely to be present. The Why KKE Should Care column is restored and editable.
         </p>
        </div>
        <button class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm" id="seedAssocBtn">
@@ -834,7 +834,7 @@ const db = getFirestore(app);
 // ------------------------------------------------------------
 const STATUSES = ["New Lead", "Researching", "Contacted", "Left Voicemail", "Email Sent", "Follow Up Needed", "Meeting Scheduled", "Property Walk Scheduled", "Proposal Sent", "Won", "Lost", "Dormant"];
 const VENDOR_STATUSES = ["Not Started", "Need Vendor Portal", "Application Requested", "Application Received", "Application Submitted", "Waiting on Insurance Review", "Waiting on W9/Compliance Docs", "Waiting on COI Requirements", "COI Submitted", "Background Check Required", "Approved Vendor", "Active Vendor", "Rejected / Not Accepted", "Dormant Vendor"];
-const ATTENDING_OPTIONS = ["Not Decided", "Planning to Attend", "Registered", "Attended", "Skipping", "Follow Up Only"];
+const ATTENDING_OPTIONS = ["Research", "Not Decided", "Planning to Attend", "Registered", "Attended", "Skipping", "Follow Up Only"];
 
 // ------------------------------------------------------------
 // Default lead seed data
@@ -2134,23 +2134,86 @@ window.updateAssociation = async (id, field, value) => {
 function renderAssociations() {
   assocTable.innerHTML = associations.map(a => `
     <tr>
-      <td class="p-3 font-bold">${a.organization || ''}</td>
-      <td class="p-3">
-        <input class="w-full min-w-56 border rounded-lg px-2 py-1 text-xs" value="${a.event || ''}" onchange="updateAssociation('${a.id}', 'event', this.value)" placeholder="Event name">
+      <td class="p-3 font-bold align-top min-w-48">${a.organization || ''}</td>
+
+      <td class="p-3 align-top">
+        <input
+          class="w-full min-w-56 border rounded-lg px-2 py-1 text-xs"
+          value="${a.event || ''}"
+          onchange="updateAssociation('${a.id}', 'event', this.value)"
+          placeholder="Event name"
+        >
       </td>
-      <td class="p-3">
-        <input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${a.date || ''}" onchange="updateAssociation('${a.id}', 'date', this.value)">
+
+      <td class="p-3 align-top">
+        <input
+          type="date"
+          class="border rounded-lg px-2 py-1 text-xs"
+          value="${a.date || ''}"
+          onchange="updateAssociation('${a.id}', 'date', this.value)"
+        >
       </td>
-      <td class="p-3">
-        <select class="border rounded-lg px-2 py-1 text-xs font-bold min-w-40" onchange="updateAssociation('${a.id}', 'attending', this.value)">
-          ${opt(ATTENDING_OPTIONS, a.attending || 'Not Decided')}
+
+      <td class="p-3 align-top">
+        <textarea
+          class="w-full min-w-64 border rounded-lg px-2 py-1 text-xs"
+          rows="3"
+          onchange="updateAssociation('${a.id}', 'location', this.value)"
+          placeholder="Event location"
+        >${a.location || ''}</textarea>
+      </td>
+
+      <td class="p-3 align-top">
+        <textarea
+          class="w-full min-w-72 border rounded-lg px-2 py-1 text-xs"
+          rows="3"
+          onchange="updateAssociation('${a.id}', 'audience', this.value)"
+          placeholder="Who will be there?"
+        >${a.audience || ''}</textarea>
+      </td>
+
+      <td class="p-3 align-top">
+        <textarea
+          class="w-full min-w-80 border rounded-lg px-2 py-1 text-xs bg-blue-50 border-blue-100"
+          rows="4"
+          onchange="updateAssociation('${a.id}', 'whyKke', this.value)"
+          placeholder="Why this event matters to KKE"
+        >${a.whyKke || ''}</textarea>
+      </td>
+
+      <td class="p-3 align-top">
+        <select
+          class="border rounded-lg px-2 py-1 text-xs font-bold min-w-40"
+          onchange="updateAssociation('${a.id}', 'attending', this.value)"
+        >
+          ${opt(ATTENDING_OPTIONS, a.attending || 'Research')}
         </select>
       </td>
-      <td class="p-3">
-        <textarea class="w-full min-w-64 border rounded-lg px-2 py-1 text-xs" rows="2" onchange="updateAssociation('${a.id}', 'contacts', this.value)" placeholder="Names, phone numbers, emails, notes">${a.contacts || ''}</textarea>
+
+      <td class="p-3 align-top">
+        <textarea
+          class="w-full min-w-72 border rounded-lg px-2 py-1 text-xs"
+          rows="4"
+          onchange="updateAssociation('${a.id}', 'contacts', this.value)"
+          placeholder="Names, phone numbers, emails, notes"
+        >${a.contacts || ''}</textarea>
       </td>
-      <td class="p-3">
-        <input class="w-full min-w-56 border rounded-lg px-2 py-1 text-xs" value="${a.followUp || ''}" onchange="updateAssociation('${a.id}', 'followUp', this.value)" placeholder="Next action / follow-up">
+
+      <td class="p-3 align-top">
+        <textarea
+          class="w-full min-w-64 border rounded-lg px-2 py-1 text-xs"
+          rows="3"
+          onchange="updateAssociation('${a.id}', 'followUp', this.value)"
+          placeholder="Next action / follow-up"
+        >${a.followUp || ''}</textarea>
+      </td>
+
+      <td class="p-3 align-top">
+        ${
+          a.url
+            ? `<a class="text-blue-700 font-black underline text-xs whitespace-nowrap" href="${a.url}" target="_blank">Open Event</a>`
+            : `<input class="w-full min-w-56 border rounded-lg px-2 py-1 text-xs" value="${a.url || ''}" onchange="updateAssociation('${a.id}', 'url', this.value)" placeholder="Event link">`
+        }
       </td>
     </tr>
   `).join('');
