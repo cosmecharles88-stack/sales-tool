@@ -80,6 +80,9 @@
       <button class="hidden bg-green-700 hover:bg-green-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm" id="seedBtn">
        Seed Default Leads
       </button>
+      <button class="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm" id="seedMunicipalBtn">
+       Seed Municipal Contractors
+      </button>
       <button class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm" id="logoutBtn">
        Logout
       </button>
@@ -718,6 +721,9 @@
       </option>
       <option>
        Commercial
+      </option>
+      <option>
+       Municipal Contractor
       </option>
       <option>
        Industrial
@@ -1608,6 +1614,265 @@ const defaultLeads = [{
   multipleProperties: true
 }];
 
+
+
+// ------------------------------------------------------------
+// Municipal contractor seed data
+// These records stay in the existing leads collection, so Firebase rules do not need a new path.
+// ------------------------------------------------------------
+const municipalContractorLeads = [
+  {
+    id: "muni-001",
+    priority: "High",
+    company: "Garret Shields Infrastructure",
+    vendorStatus: "Not Started",
+    segment: "Municipal Contractor",
+    contact: "",
+    title: "Estimator / Project Manager / Municipal Concrete Contact",
+    phone: "",
+    email: "",
+    city: "Plano / DFW",
+    status: "Researching",
+    lastContact: "",
+    nextFollowUp: "",
+    notes: "Plano municipal concrete target. Public agenda research tied this company to residential concrete pavement repair, sidewalks, ADA ramps, alley/street rehabilitation. KKE angle: lift/stabilize settled panels, void filling, bridge approaches, and schedule-saving specialty correction.",
+    portfolioType: "Municipal Contractor Portfolio",
+    multipleProperties: true,
+    citiesServed: "Plano / DFW",
+    contractType: "Residential concrete pavement repair; sidewalks; ADA ramps; alley/street rehabilitation",
+    municipalRelationship: "Known Plano municipal concrete contractor lead",
+    foamOpportunity: "High",
+    trafficControlHeavy: "Yes",
+    settlementExposure: "High",
+    sourceNotes: "Public city agenda / municipal contract research. Verify current contract status before outreach."
+  },
+  {
+    id: "muni-002",
+    priority: "High",
+    company: "R.A. Legacy Construction LLC",
+    vendorStatus: "Not Started",
+    segment: "Municipal Contractor",
+    contact: "",
+    title: "Estimator / Project Manager / Superintendent",
+    phone: "",
+    email: "",
+    city: "Garland",
+    status: "Researching",
+    lastContact: "",
+    nextFollowUp: "",
+    notes: "Garland municipal target. City communication referenced this contractor mobilizing on subdivision concrete/street work. KKE angle: partner on settlement correction, void filling, trip hazard repair, and faster panel-saving options.",
+    portfolioType: "Municipal Contractor Portfolio",
+    multipleProperties: true,
+    citiesServed: "Garland",
+    contractType: "Subdivision concrete/street work",
+    municipalRelationship: "Known Garland contractor lead",
+    foamOpportunity: "High",
+    trafficControlHeavy: "Yes",
+    settlementExposure: "High",
+    sourceNotes: "Public city communication / municipal project research. Verify current project contacts before outreach."
+  },
+  {
+    id: "muni-003",
+    priority: "High",
+    company: "V.A. Construction Inc.",
+    vendorStatus: "Not Started",
+    segment: "Municipal Contractor",
+    contact: "",
+    title: "Estimator / Project Manager / Concrete Division Contact",
+    phone: "",
+    email: "",
+    city: "Plano / DFW",
+    status: "Researching",
+    lastContact: "",
+    nextFollowUp: "",
+    notes: "DFW municipal concrete target. Research tied the company to arterial concrete repair, sidewalk repair, ADA ramp work, and McDermott Road improvement activity. KKE angle: subcontract foam stabilization where settlement threatens replacement or schedule.",
+    portfolioType: "Municipal Contractor Portfolio",
+    multipleProperties: true,
+    citiesServed: "Plano / DFW",
+    contractType: "Arterial concrete repair; sidewalk repair; ADA ramps",
+    municipalRelationship: "Municipal concrete repair contractor lead",
+    foamOpportunity: "High",
+    trafficControlHeavy: "Yes",
+    settlementExposure: "High",
+    sourceNotes: "Public infrastructure / municipal research. Verify active contacts."
+  },
+  {
+    id: "muni-004",
+    priority: "High",
+    company: "J&L Construction LLC",
+    vendorStatus: "Not Started",
+    segment: "Municipal Contractor",
+    contact: "",
+    title: "Estimator / Project Manager / Municipal Work Contact",
+    phone: "",
+    email: "",
+    city: "Garland / DFW",
+    status: "Researching",
+    lastContact: "",
+    nextFollowUp: "",
+    notes: "Garland/DFW municipal concrete target. Appears in municipal bid/agenda research tied to arterial/concrete repair activity. KKE angle: rapid lift/stabilization support for traffic-control-heavy concrete repair work.",
+    portfolioType: "Municipal Contractor Portfolio",
+    multipleProperties: true,
+    citiesServed: "Garland / DFW",
+    contractType: "Arterial/concrete repair",
+    municipalRelationship: "Municipal bid/agenda lead",
+    foamOpportunity: "Medium-High",
+    trafficControlHeavy: "Yes",
+    settlementExposure: "Medium-High",
+    sourceNotes: "Municipal bid/agenda research. Verify award/current scope."
+  },
+  {
+    id: "muni-005",
+    priority: "Medium",
+    company: "Precision Concrete Cutting",
+    vendorStatus: "Not Started",
+    segment: "Municipal Contractor",
+    contact: "",
+    title: "Municipal Sales / Operations Contact",
+    phone: "",
+    email: "",
+    city: "Plano / DFW",
+    status: "Researching",
+    lastContact: "",
+    nextFollowUp: "",
+    notes: "Plano sidewalk trip hazard repair lead. Strategic because cities are already paying for alternatives to replacement. KKE angle: partner or differentiate where grinding/cutting is not enough and elevation correction or void filling is needed.",
+    portfolioType: "Municipal Contractor Portfolio",
+    multipleProperties: true,
+    citiesServed: "Plano / DFW",
+    contractType: "Sidewalk trip hazard repair",
+    municipalRelationship: "Known sidewalk remediation contractor lead",
+    foamOpportunity: "Medium-High",
+    trafficControlHeavy: "Sometimes",
+    settlementExposure: "High",
+    sourceNotes: "Public municipal sidewalk repair research. Verify local contact."
+  },
+  {
+    id: "muni-006",
+    priority: "Medium",
+    company: "DFW Concrete, Inc.",
+    vendorStatus: "Not Started",
+    segment: "Municipal Contractor",
+    contact: "",
+    title: "Estimator / Project Manager",
+    phone: "",
+    email: "",
+    city: "Dallas-Fort Worth",
+    status: "Researching",
+    lastContact: "",
+    nextFollowUp: "",
+    notes: "DFW commercial/industrial concrete contractor lead. Good subcontractor partnership candidate for panel-saving foam correction, void filling, and low-disruption repair options around public/private infrastructure.",
+    portfolioType: "Municipal Contractor Portfolio",
+    multipleProperties: true,
+    citiesServed: "DFW",
+    contractType: "Commercial/industrial concrete; verify municipal activity",
+    municipalRelationship: "Research target",
+    foamOpportunity: "Medium",
+    trafficControlHeavy: "Unknown",
+    settlementExposure: "Medium",
+    sourceNotes: "Lead generated for contractor ecosystem outreach. Verify public contract history."
+  },
+  {
+    id: "muni-007",
+    priority: "Medium",
+    company: "Metroplex Concrete Company LLC",
+    vendorStatus: "Not Started",
+    segment: "Municipal Contractor",
+    contact: "",
+    title: "Estimator / Project Manager",
+    phone: "",
+    email: "",
+    city: "Dallas-Fort Worth",
+    status: "Researching",
+    lastContact: "",
+    nextFollowUp: "",
+    notes: "DFW concrete contractor target. Research fit for municipal/commercial flatwork partnership. KKE angle: specialty stabilization subcontractor for settled slabs, ADA issues, voids, and fast correction work.",
+    portfolioType: "Municipal Contractor Portfolio",
+    multipleProperties: true,
+    citiesServed: "DFW",
+    contractType: "Concrete flatwork / repair; verify municipal activity",
+    municipalRelationship: "Research target",
+    foamOpportunity: "Medium",
+    trafficControlHeavy: "Unknown",
+    settlementExposure: "Medium",
+    sourceNotes: "Lead generated for DFW contractor ecosystem outreach."
+  },
+  {
+    id: "muni-008",
+    priority: "Medium",
+    company: "Red River Concrete LLC",
+    vendorStatus: "Not Started",
+    segment: "Municipal Contractor",
+    contact: "",
+    title: "Estimator / Project Manager",
+    phone: "",
+    email: "",
+    city: "North Texas",
+    status: "Researching",
+    lastContact: "",
+    nextFollowUp: "",
+    notes: "Regional concrete contractor target. KKE angle: subcontract foam stabilization where replacement is slow, expensive, or disruptive on municipal/commercial work.",
+    portfolioType: "Municipal Contractor Portfolio",
+    multipleProperties: true,
+    citiesServed: "North Texas",
+    contractType: "Concrete work; verify municipal activity",
+    municipalRelationship: "Research target",
+    foamOpportunity: "Medium",
+    trafficControlHeavy: "Unknown",
+    settlementExposure: "Medium",
+    sourceNotes: "Lead generated for contractor ecosystem outreach."
+  },
+  {
+    id: "muni-009",
+    priority: "Medium",
+    company: "A-Core Concrete Specialists of Texas",
+    vendorStatus: "Not Started",
+    segment: "Municipal Contractor",
+    contact: "",
+    title: "Operations / Estimating Contact",
+    phone: "",
+    email: "",
+    city: "Dallas-Fort Worth",
+    status: "Researching",
+    lastContact: "",
+    nextFollowUp: "",
+    notes: "Specialty concrete contractor target. KKE angle: technical partnership for stabilization, void filling, and lift correction when cutting/demo/core work exposes subgrade or settlement issues.",
+    portfolioType: "Municipal Contractor Portfolio",
+    multipleProperties: true,
+    citiesServed: "DFW / Texas",
+    contractType: "Specialty concrete services; verify municipal activity",
+    municipalRelationship: "Research target",
+    foamOpportunity: "Medium",
+    trafficControlHeavy: "Unknown",
+    settlementExposure: "Medium",
+    sourceNotes: "Lead generated for specialty contractor partnership outreach."
+  },
+  {
+    id: "muni-010",
+    priority: "Medium",
+    company: "New Road Concrete LLC",
+    vendorStatus: "Not Started",
+    segment: "Municipal Contractor",
+    contact: "",
+    title: "Estimator / Project Manager",
+    phone: "",
+    email: "",
+    city: "Dallas-Fort Worth",
+    status: "Researching",
+    lastContact: "",
+    nextFollowUp: "",
+    notes: "Roadway/concrete contractor target. KKE angle: become their foam injection partner for roadway settlement, longitudinal joint issues, bridge approaches, void filling, and fast municipal repair support.",
+    portfolioType: "Municipal Contractor Portfolio",
+    multipleProperties: true,
+    citiesServed: "DFW",
+    contractType: "Roadway/concrete work; verify municipal activity",
+    municipalRelationship: "Research target",
+    foamOpportunity: "Medium-High",
+    trafficControlHeavy: "Likely",
+    settlementExposure: "Medium-High",
+    sourceNotes: "Lead generated for municipal contractor ecosystem outreach."
+  }
+];
+
 const recommendedAssociationEvents = [
   {
     "id": "event-aagd-tradeshow-2026",
@@ -1909,6 +2174,41 @@ seedBtn.addEventListener('click', async () => {
 
 
 // ------------------------------------------------------------
+// Municipal contractor lead seeding
+// Adds DFW municipal contractor intelligence leads into the existing leads collection.
+// Uses fixed document IDs and skips existing docs to avoid duplicate records.
+// ------------------------------------------------------------
+seedMunicipalBtn?.addEventListener('click', async () => {
+  const existingSnap = await getDocs(collection(db, "leads"));
+  const existingCompanies = new Set(existingSnap.docs.map(d => String(d.data().company || '').toLowerCase().trim()));
+
+  const batch = writeBatch(db);
+  let added = 0;
+
+  municipalContractorLeads.forEach(l => {
+    const companyKey = String(l.company || '').toLowerCase().trim();
+    if (existingCompanies.has(companyKey)) return;
+
+    batch.set(doc(db, "leads", String(l.id)), {
+      ...l,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      updatedBy: currentUser?.email || ""
+    });
+    added += 1;
+  });
+
+  if (!added) {
+    alert("Municipal contractor leads already exist. Seed cancelled to avoid duplicates.");
+    return;
+  }
+
+  await batch.commit();
+  alert(`${added} municipal contractor leads added.`);
+});
+
+
+// ------------------------------------------------------------
 // Recommended association/networking event seeding
 // Writes the recommended event list to Firestore so the team sees it.
 // ------------------------------------------------------------
@@ -1942,7 +2242,12 @@ function calculateScore(l) {
   if (l.segment === 'Multifamily') s += 10;
   if (l.segment === 'Commercial') s += 8;
   if (l.segment === 'HOA') s += 7;
+  if (l.segment === 'Municipal Contractor') s += 12;
   if (l.multipleProperties) s += 10;
+  if (l.foamOpportunity === 'High') s += 12;
+  if (l.foamOpportunity === 'Medium-High') s += 8;
+  if (l.settlementExposure === 'High') s += 10;
+  if (l.trafficControlHeavy === 'Yes' || l.trafficControlHeavy === 'Likely') s += 6;
   if (l.status === 'Meeting Scheduled') s += 20;
   if (l.status === 'Proposal Sent') s += 25;
   if (l.status === 'Property Walk Scheduled') s += 30;
@@ -1973,8 +2278,35 @@ function opt(list, val) {
 // ------------------------------------------------------------
 function renderLeads() {
   const search = searchInput.value.toLowerCase();
-  const filtered = leads.filter(l => [l.company, l.city, l.segment, l.status, l.vendorStatus, l.notes].join(' ').toLowerCase().includes(search));
-  leadsTable.innerHTML = filtered.map(l => `<tr class="${rowClass(l)} hover:bg-slate-50"><td class="px-4 py-3 font-bold">${l.priority||''}</td><td class="px-4 py-3"><b>${l.company||''}</b><div class="text-[10px] uppercase text-slate-400 font-bold">${l.notes||''}</div></td><td class="px-4 py-3"><select class="border rounded-lg px-2 py-1 text-xs font-bold w-full" onchange="updateLead('${l.id}','vendorStatus',this.value)">${opt(VENDOR_STATUSES,l.vendorStatus||'Not Started')}</select></td><td class="px-4 py-3 font-semibold">${l.segment||''}</td><td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${l.contact||''}" onchange="updateLead('${l.id}','contact',this.value)" placeholder="Enter name"></td><td class="px-4 py-3 text-slate-600">${l.title||''}</td><td class="px-4 py-3 font-mono text-xs font-bold whitespace-nowrap">${l.phone||''}</td><td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${l.email||''}" onchange="updateLead('${l.id}','email',this.value)" placeholder="email"></td><td class="px-4 py-3">${l.city||''}</td><td class="px-4 py-3"><select class="border rounded-lg px-2 py-1 text-xs font-bold" onchange="updateLead('${l.id}','status',this.value)">${opt(STATUSES,l.status)}</select></td><td class="px-4 py-3 text-center font-black text-blue-700">${calculateScore(l)}</td><td class="px-4 py-3"><input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${l.lastContact||''}" onchange="updateLead('${l.id}','lastContact',this.value)"></td><td class="px-4 py-3"><input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${l.nextFollowUp||''}" onchange="updateLead('${l.id}','nextFollowUp',this.value)"></td><td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${l.notes||''}" onchange="updateLead('${l.id}','notes',this.value)"></td></tr>`).join('');
+  const searchableFields = l => [
+    l.company,
+    l.city,
+    l.segment,
+    l.status,
+    l.vendorStatus,
+    l.notes,
+    l.citiesServed,
+    l.contractType,
+    l.municipalRelationship,
+    l.foamOpportunity,
+    l.settlementExposure,
+    l.sourceNotes
+  ].join(' ').toLowerCase();
+
+  const filtered = leads.filter(l => searchableFields(l).includes(search));
+
+  leadsTable.innerHTML = filtered.map(l => {
+    const municipalIntel = l.segment === 'Municipal Contractor' ? `
+      <div class="mt-2 grid gap-1 text-[10px] uppercase tracking-wide text-slate-500 font-black">
+        <div>City Tie: ${l.citiesServed || l.city || ''}</div>
+        <div>Contract: ${l.contractType || 'Research needed'}</div>
+        <div>Foam Opportunity: ${l.foamOpportunity || 'TBD'} • Settlement: ${l.settlementExposure || 'TBD'}</div>
+      </div>
+    ` : '';
+
+    return `<tr class="${rowClass(l)} hover:bg-slate-50"><td class="px-4 py-3 font-bold">${l.priority||''}</td><td class="px-4 py-3"><b>${l.company||''}</b><div class="text-[10px] uppercase text-slate-400 font-bold">${l.notes||''}</div>${municipalIntel}</td><td class="px-4 py-3"><select class="border rounded-lg px-2 py-1 text-xs font-bold w-full" onchange="updateLead('${l.id}','vendorStatus',this.value)">${opt(VENDOR_STATUSES,l.vendorStatus||'Not Started')}</select></td><td class="px-4 py-3 font-semibold">${l.segment||''}</td><td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${l.contact||''}" onchange="updateLead('${l.id}','contact',this.value)" placeholder="Enter name"></td><td class="px-4 py-3 text-slate-600">${l.title||''}</td><td class="px-4 py-3 font-mono text-xs font-bold whitespace-nowrap">${l.phone||''}</td><td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${l.email||''}" onchange="updateLead('${l.id}','email',this.value)" placeholder="email"></td><td class="px-4 py-3">${l.city||''}</td><td class="px-4 py-3"><select class="border rounded-lg px-2 py-1 text-xs font-bold" onchange="updateLead('${l.id}','status',this.value)">${opt(STATUSES,l.status)}</select></td><td class="px-4 py-3 text-center font-black text-blue-700">${calculateScore(l)}</td><td class="px-4 py-3"><input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${l.lastContact||''}" onchange="updateLead('${l.id}','lastContact',this.value)"></td><td class="px-4 py-3"><input type="date" class="border rounded-lg px-2 py-1 text-xs" value="${l.nextFollowUp||''}" onchange="updateLead('${l.id}','nextFollowUp',this.value)"></td><td class="px-4 py-3"><input class="w-full bg-transparent border-b border-slate-200 px-1 py-1" value="${l.notes||''}" onchange="updateLead('${l.id}','notes',this.value)"></td></tr>`;
+  }).join('');
+
   renderMetrics();
   renderHotLeads();
 }
@@ -2318,16 +2650,17 @@ function renderAuditLogs() {
 }
 
 window.exportCSV = () => {
-  const headers = ['Priority', 'Company', 'Vendor Status', 'Segment', 'Contact', 'Title', 'Phone', 'Email', 'City', 'Status', 'Lead Score', 'Last Contact', 'Next Follow Up', 'Notes'];
-  const rows = leads.map(l => [l.priority, l.company, l.vendorStatus || 'Not Started', l.segment, l.contact, l.title, l.phone, l.email, l.city, l.status, calculateScore(l), l.lastContact, l.nextFollowUp, l.notes]);
-  const csv = [headers, ...rows].map(row => row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const headers = ['Priority', 'Company', 'Vendor Status', 'Segment', 'Contact', 'Title', 'Phone', 'Email', 'City', 'Status', 'Lead Score', 'Last Contact', 'Next Follow Up', 'Cities Served', 'Contract Type', 'Municipal Relationship', 'Foam Opportunity', 'Traffic Control Heavy', 'Settlement Exposure', 'Source Notes', 'Notes'];
+  const rows = leads.map(l => [l.priority, l.company, l.vendorStatus || 'Not Started', l.segment, l.contact, l.title, l.phone, l.email, l.city, l.status, calculateScore(l), l.lastContact, l.nextFollowUp, l.citiesServed, l.contractType, l.municipalRelationship, l.foamOpportunity, l.trafficControlHeavy, l.settlementExposure, l.sourceNotes, l.notes]);
+  const csv = [headers, ...rows].map(row => row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('
+');
   const blob = new Blob([csv], {
     type: 'text/csv'
   });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'kke_property_management_leads.csv';
+  a.download = 'kke_sales_command_center_leads.csv';
   a.click();
   URL.revokeObjectURL(url);
 };
