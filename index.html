@@ -835,6 +835,77 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ------------------------------------------------------------
+// DOM references
+// Do not rely on browser auto-created globals for element IDs.
+// This keeps login and buttons stable on GitHub Pages/mobile browsers.
+// ------------------------------------------------------------
+const loginScreen = document.getElementById("loginScreen");
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+const loginBtn = document.getElementById("loginBtn");
+const loginError = document.getElementById("loginError");
+const appScreen = document.getElementById("appScreen");
+const userStatus = document.getElementById("userStatus");
+const searchInput = document.getElementById("searchInput");
+const seedBtn = document.getElementById("seedBtn");
+const seedMunicipalBtn = document.getElementById("seedMunicipalBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const seedAssocBtn = document.getElementById("seedAssocBtn");
+const leadModal = document.getElementById("leadModal");
+
+const metricTotal = document.getElementById("metricTotal");
+const metricResearch = document.getElementById("metricResearch");
+const metricMeetings = document.getElementById("metricMeetings");
+const metricWalks = document.getElementById("metricWalks");
+const metricWon = document.getElementById("metricWon");
+const leadsTable = document.getElementById("leadsTable");
+const callsTable = document.getElementById("callsTable");
+const walksTable = document.getElementById("walksTable");
+const hotLeads = document.getElementById("hotLeads");
+const weeklyKpiCards = document.getElementById("weeklyKpiCards");
+const followUpQueue = document.getElementById("followUpQueue");
+const vendorKpiBreakdown = document.getElementById("vendorKpiBreakdown");
+const auditTable = document.getElementById("auditTable");
+const assocTable = document.getElementById("assocTable");
+const proposalTable = document.getElementById("proposalTable");
+
+const callDate = document.getElementById("callDate");
+const callCompany = document.getElementById("callCompany");
+const callContact = document.getElementById("callContact");
+const callOutcome = document.getElementById("callOutcome");
+const callFollowUp = document.getElementById("callFollowUp");
+const callNotes = document.getElementById("callNotes");
+
+const walkProperty = document.getElementById("walkProperty");
+const walkAddress = document.getElementById("walkAddress");
+const walkManager = document.getElementById("walkManager");
+const walkDate = document.getElementById("walkDate");
+const walkType = document.getElementById("walkType");
+const walkIssue = document.getElementById("walkIssue");
+const walkRisk = document.getElementById("walkRisk");
+const walkProposal = document.getElementById("walkProposal");
+const walkFollowUp = document.getElementById("walkFollowUp");
+
+const proposalCompany = document.getElementById("proposalCompany");
+const proposalProperty = document.getElementById("proposalProperty");
+const proposalAmount = document.getElementById("proposalAmount");
+const proposalDate = document.getElementById("proposalDate");
+const proposalStatus = document.getElementById("proposalStatus");
+const proposalFollowUp = document.getElementById("proposalFollowUp");
+
+const newPriority = document.getElementById("newPriority");
+const newSegment = document.getElementById("newSegment");
+const newCompany = document.getElementById("newCompany");
+const newContact = document.getElementById("newContact");
+const newTitle = document.getElementById("newTitle");
+const newPhone = document.getElementById("newPhone");
+const newEmail = document.getElementById("newEmail");
+const newCity = document.getElementById("newCity");
+const newVendorStatus = document.getElementById("newVendorStatus");
+const newFollowUp = document.getElementById("newFollowUp");
+const newNotes = document.getElementById("newNotes");
+
+// ------------------------------------------------------------
 // Dropdown values
 // Update these lists if you want new CRM statuses.
 // ------------------------------------------------------------
